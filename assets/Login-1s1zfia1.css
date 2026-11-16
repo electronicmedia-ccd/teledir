@@ -1,0 +1,129 @@
+Fix for full screen coverage
+html,
+body,
+#container,
+#container-uiarea {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.loginView {
+  background: linear-gradient(
+    159deg,
+    rgba(0, 0, 128, 1) 0%,
+    rgba(0, 191, 255, 1) 100%
+  );
+  font-family: sans-serif;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Expanded card size with removed animations */
+.loginPanelEnhanced {
+  overflow: hidden;
+  background-color: white;
+  padding: 50px 40px 40px 40px;
+  border-radius: 15px;
+  width: 450px;
+  /* Increased from 400px */
+  min-height: 500px;
+  /* Added min-height for better proportions */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 25px;
+}
+/* Removed all animation-related styles (::before, ::after, @keyframes) */
+
+/* Bold title styling */
+.login-view-page .loginTitle {
+  font-size: 1.75rem !important;
+  font-weight: bold !important;
+  color: #04317a !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+.loginInput {
+  font-family: sans-serif;
+  display: block;
+  border-radius: 5px;
+  font-size: 16px;
+  background: white;
+  width: 100%;
+  /* border: 1px solid #000; */
+  /* margin: 15px 0; */
+  /* padding: 0.875rem; */
+  box-sizing: border-box;
+}
+.loginInput .sapMInputBaseInner {
+  border: none !important;
+  background: transparent !important;
+}
+.loginInput .sapMInputBaseInner:focus {
+  border: 2px solid #0070f2 !important;
+  box-shadow: 0 0 0 1px rgba(0, 112, 242, 0.2) !important;
+  outline: none !important;
+  border-radius: 5px !important;
+}
+/* Enhanced login button styling 
+.loginButtonEnhanced {
+  font-family: sans-serif !important;
+  cursor: pointer !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  width: 100% !important;
+  border: 0 !important;
+  margin-top: 10px !important;
+  padding: 1rem !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #0070f2 0%, #0057d2 100%) !important;
+  transition: all 0.3s ease-in-out !important;
+  box-shadow: 0 4px 15px rgba(0, 112, 242, 0.3) !important;
+  letter-spacing: 1px;
+  height: 3.5rem !important;
+}
+
+.loginButtonEnhanced:hover {
+  background: linear-gradient(135deg, #0057d2 0%, #0041a8 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 112, 242, 0.4) !important;
+}
+
+.loginButtonEnhanced:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 10px rgba(0, 112, 242, 0.3) !important;
+}
+
+.loginView .sapMBtnInner {
+  border-radius: 8px !important;
+}
+*/
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .loginPanelEnhanced {
+    width: 90%;
+    padding: 40px 30px;
+    min-height: auto;
+  }
+  .loginTitle {
+    font-size: 1.5rem !important;
+  }
+}
+.sapMListUl .sapMLIB.sapMGHLI {
+  background-color: #e8f4ff !important;
+  /* light blue */
+  color: #003366 !important;
+}

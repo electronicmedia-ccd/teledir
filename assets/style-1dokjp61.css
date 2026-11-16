@@ -1,0 +1,165 @@
+/* General Hamburger Menu Styles for all views */
+.employee-form-view .side-menu,
+.nodal-office-view .side-menu,
+.residence-form-view .side-menu,
+.division-nodal-view .side-menu {
+  position: absolute !important;
+  left: 0;
+  z-index: 1000;
+  background-color: #ffffff;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  border: none !important;
+  width: 16rem;
+}
+/* .employee-form-view .menu-items-container,
+.nodal-office-view .menu-items-container,
+.residence-form-view .menu-items-container {
+  padding: 0.5rem; 
+} */
+
+.employee-form-view .menu-item,
+.nodal-office-view .menu-item,
+.division-nodal-view .menu-item,
+.residence-form-view .menu-item {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  margin: 0.25rem 0;
+  padding: 0.75rem 1rem !important;
+  border-radius: 4px !important;
+  font-size: 0.875rem !important;
+  transition: all 0.3s !important;
+}
+.employee-form-view .menu-item:hover,
+.nodal-office-view .menu-item:hover,
+.division-nodal-view .menu-item:hover,
+.residence-form-view .menu-item:hover {
+  background-color: #f5f5f5 !important;
+}
+.employee-form-view .menu-item .sapMBtnContent,
+.nodal-office-view .menu-item .sapMBtnContent,
+.division-nodal-view .menu-item .sapMBtnContent,
+.residence-form-view .menu-item .sapMBtnContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* Header styles for all views */
+.employee-form-view header.sapMBar,
+.nodal-office-view header.sapMBar,
+.division-nodal-view header.sapMBar,
+.residence-form-view header.sapMBar {
+  padding: 0 1rem !important;
+  height: 3.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 100;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+.employee-form-view .navMenuButton,
+.nodal-office-view .navMenuButton,
+.division-nodal-view .navMenuButton,
+.residence-form-view .navMenuButton {
+  background-color: transparent !important;
+  padding: 0 0.5rem 0 0 !important;
+  border: none !important;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.employee-form-view .page-title,
+.nodal-office-view .page-title,
+.division-nodal-view .page-title,
+.residence-form-view .page-title {
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  color: #091438 !important;
+  margin-left: 0.5rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: normal;
+  padding: 0.5rem 0;
+}
+.office-form-view .login-menu-item,
+.employee-form-view .login-menu-item,
+.residence-form-view .login-menu-item,
+.nodal-office-view .login-menu-item,
+.division-nodal-view .login-menu-item {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  margin: 0.5rem 0;
+  background-color: #0070f2 !important;
+  color: white !important;
+  border-radius: 4px !important;
+  font-size: 1rem !important;
+  font-weight: bold !important;
+  transition: all 0.3s !important;
+  margin-top: 50px !important;
+}
+.office-form-view .login-menu-item span,
+.employee-form-view .login-menu-item span,
+.residence-form-view .login-menu-item span,
+.nodal-office-view .login-menu-item span,
+.division-nodal-view .login-menu-item span {
+  display: flex !important;
+  justify-content: center !important;
+}
+.office-form-view .login-menu-item ::before,
+.employee-form-view .login-menu-item ::before,
+.residence-form-view .login-menu-item ::before,
+.nodal-office-view .login-menu-item ::before,
+.division-nodal-view .login-menu-item ::before {
+  color: white !important;
+}
+.office-form-view .login-menu-item:hover,
+.employee-form-view .login-menu-item:hover,
+.residence-form-view .login-menu-item:hover,
+.nodal-office-view .login-menu-item:hover,
+.division-nodal-view .login-menu-item:hover {
+  background-color: #0057d2 !important;
+}
+.office-form-view .login-hint-text,
+.employee-form-view .login-hint-text,
+.residence-form-view .login-hint-text,
+.nodal-office-view .login-hint-text,
+.division-nodal-view .login-hint-text {
+  text-align: center;
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+  padding: 0 1rem;
+}
+.office-form-view .logout-menu-item,
+.employee-form-view .logout-menu-item,
+.residence-form-view .logout-menu-item,
+.nodal-office-view .logout-menu-item,
+.division-nodal-view .logout-menu-item {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  margin: 1rem 0 0.5rem 0;
+  padding: 0.75rem !important;
+  /* background-color: #ff0000 !important; */
+  color: white !important;
+  border-radius: 4px !important;
+  font-size: 0.875rem !important;
+}
+/* Login Button Vertical Centering */
+.office-form-view .login-menu-item .sapMBtnContent,
+.employee-form-view .login-menu-item .sapMBtnContent,
+.residence-form-view .login-menu-item .sapMBtnContent,
+.nodal-office-view .login-menu-item .sapMBtnContent,
+.division-nodal-view .login-menu-item .sapMBtnContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

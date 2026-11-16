@@ -1,0 +1,2642 @@
+/* ==========================================================================
+   NLCIL Telephone Directory – TelephoneList view
+
+   Six themes, chosen with the palette button in the header (saved per device):
+     Aurora            default – the original look, unchanged
+     Corporate Indigo  NLC brand indigo (taken from the logo, #3d2f84)
+     Executive Ivory   warm ivory, deep navy and champagne gold
+     Fresh Teal        teal and emerald
+     Slate Sapphire    neutral slate with sapphire blue
+     Midnight          dark – paints the standard UI5 controls itself, so it
+                       works with any UI5 version / SAP theme; the controller
+                       also switches the SAP theme to its dark variant while
+                       this view is shown (for popups and messages)
+
+   The controller puts "td-theme-<key>" on the view and on the controls UI5
+   renders outside it (contact card, theme picker, number menu). A theme is
+   only a set of tokens – every rule further down uses tokens, so all themes
+   share the same layout.
+
+   All rules are scoped to .td-view, .td-contact-dialog, .td-theme-popover and
+   .td-number-sheet, so other views are not affected.
+
+   Include via manifest.json -> "sap.ui5" -> "resources" -> "css":
+       { "uri": "css/telephoneDirectory.css" }
+   (or paste this file at the end of the existing css/style.css)
+   The NLC emblem is embedded in this file (.td-brand-logo) – no image file needed.
+   ========================================================================== */
+
+/* =========================== theme tokens: Aurora (default) =========================== */
+
+.td-view,
+.td-contact-dialog,
+.td-theme-popover,
+.td-number-sheet {
+  /* brand */
+    --td-cyan: #22d3ee;
+  --td-indigo: #6366f1;
+  --td-violet: #a855f7;
+  --td-grad: linear-gradient(135deg, #22d3ee 0%, #6366f1 55%, #a855f7 100%);
+  --td-grad-btn: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+  --td-on-accent: #ffffff;
+  --td-ring: #6366f1;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 10px 24px -10px rgba(99, 102, 241, 0.95);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 12px 30px -8px rgba(99, 102, 241, 1);
+  --td-danger-grad: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
+  --td-danger-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 22px -8px rgba(244, 63, 94, 0.95);
+  --td-danger-shadow-pulse: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 8px 30px -4px rgba(244, 63, 94, 1);
+  /* content */
+    --td-bg: #f2f4fa;
+  --td-surface: #ffffff;
+  --td-line: #e8ebf3;
+  --td-text: #0f172a;
+  --td-sub: #475569;
+  --td-muted: #64748b;
+  --td-faint: #94a3b8;
+  --td-accent: #4338ca;
+  --td-link: #4f46e5;
+  --td-card-border: rgba(15, 23, 42, 0.06);
+  --td-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 22px 50px -22px rgba(15, 23, 42, 0.32);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.9), rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9), transparent);
+  --td-toolbar-bg: rgba(255, 255, 255, 0.94);
+  --td-thead-bg: #fbfcfe;
+  --td-row-line: #eef1f7;
+  --td-row-alt: #f5f6f7;
+  --td-row-hover: linear-gradient(90deg, rgba(99, 102, 241, 0.07), rgba(34, 211, 238, 0.035) 55%, transparent);
+  --td-row-hover-edge: #6366f1;
+  --td-group-bg: #f8fafc;
+  --td-group-text: #334155;
+  --td-group-dot: var(--td-grad);
+  --td-group-dot-shadow: 0 0 10px rgba(99, 102, 241, 0.65);
+  --td-mark: rgba(34, 211, 238, 0.45);
+  --td-num-bg: #f2f4ff;
+  --td-num-text: #3730a3;
+  --td-num-bg-hover: #eef0ff;
+  --td-num-border-hover: #c7d2fe;
+  --td-num-text-hover: #4338ca;
+  --td-num-shadow-hover: 0 0 0 3px rgba(99, 102, 241, 0.13), 0 6px 16px -10px rgba(99, 102, 241, 0.9);
+  --td-seg-bg: #f1f5f9;
+  --td-seg-border: #e2e8f0;
+  --td-seg-sel-bg: #ffffff;
+  --td-seg-sel-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 6px 16px -6px rgba(99, 102, 241, 0.45);
+  --td-tab-indicator: var(--td-grad);
+  --td-tab-indicator-shadow: 0 -2px 14px rgba(99, 102, 241, 0.6);
+  --td-subtabs-bg: linear-gradient(180deg, #f8f9fe, #ffffff);
+  --td-tab-pill-bg: #f4f6fb;
+  --td-tab-pill-border: #e4e8f4;
+  --td-tab-pill-bg-hover: #eef1ff;
+  --td-tab-pill-border-hover: #c7d2fe;
+  --td-tab-pill-sel-bg: var(--td-grad-btn);
+  --td-tab-pill-sel-shadow: 0 4px 12px -6px rgba(99, 102, 241, 0.9);
+  --td-soft-btn-bg: #f1f5f9;
+  --td-scroll-thumb: rgba(100, 116, 139, 0.35);
+  --td-empty-shadow: 0 0 0 8px rgba(99, 102, 241, 0.08), 0 16px 34px -12px rgba(99, 102, 241, 0.85);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 12px 28px -8px rgba(99, 102, 241, 0.9);
+  /* avatars (stable colour per name via Accent1-10; Accent6 = service numbers) */
+    --td-avatar-text: #ffffff;
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28), 0 6px 14px -6px rgba(15, 23, 42, 0.5);
+  --td-av1: linear-gradient(135deg, #fb923c, #f43f5e);
+  --td-av2: linear-gradient(135deg, #f87171, #db2777);
+  --td-av3: linear-gradient(135deg, #f472b6, #a855f7);
+  --td-av4: linear-gradient(135deg, #c084fc, #6366f1);
+  --td-av5: linear-gradient(135deg, #818cf8, #2563eb);
+  --td-av6: linear-gradient(135deg, #38bdf8, #06b6d4);
+  --td-av7: linear-gradient(135deg, #2dd4bf, #059669);
+  --td-av8: linear-gradient(135deg, #a3e635, #10b981);
+  --td-av9: linear-gradient(135deg, #a78bfa, #d946ef);
+  --td-av10: linear-gradient(135deg, #64748b, #0ea5e9);
+  /* top area: header, search band and hero – blue on the left, fading to light grey */
+    --td-top-bg: linear-gradient(100deg, #d7f2fb 0%, #e5f3fb 30%, #eff4fb 60%, #f3f5fb 100%);
+  --td-header-glow: radial-gradient(32% 160% at 0% 0%, rgba(34, 211, 238, 0.22), transparent 70%);
+  --td-hero-bg: linear-gradient(180deg, transparent 68%, var(--td-bg) 100%), var(--td-top-bg);
+  --td-aurora: radial-gradient(38% 48% at 16% 55%, rgba(34, 211, 238, 0.42), transparent 70%);
+  --td-aurora-mask: linear-gradient(180deg, transparent 22%, #000 42%, #000 70%, transparent 96%);
+  --td-grid: rgba(100, 116, 139, 0.08);
+  --td-hero-pattern: linear-gradient(var(--td-grid) 1px, transparent 1px), linear-gradient(90deg, var(--td-grid) 1px, transparent 1px);
+  --td-hero-pattern-size: 44px 44px;
+  --td-top-line: rgba(15, 23, 42, 0.08);
+  --td-band-shadow: 0 1px 0 rgba(15, 23, 42, 0.08), 0 8px 18px -16px rgba(15, 23, 42, 0.3);
+  --td-top-text: #0f172a;
+  --td-top-sub: #3d4a61;
+  --td-top-label: #475569;
+  --td-focus: rgba(79, 70, 229, 0.9);
+  --td-caret: var(--td-indigo);
+  --td-btn-bg: #ffffff;
+  --td-btn-border: rgba(15, 23, 42, 0.1);
+  --td-btn-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --td-btn-bg-hover: #f5f7ff;
+  --td-btn-border-hover: #c7d2fe;
+  --td-btn-text: #1e293b;
+  --td-field-bg: #ffffff;
+  --td-field-bg-hover: #ffffff;
+  --td-field-bg-focus: #ffffff;
+  --td-field-border: rgba(15, 23, 42, 0.1);
+  --td-field-border-hover: rgba(79, 70, 229, 0.3);
+  --td-field-border-focus: rgba(34, 211, 238, 0.75);
+  --td-field-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 14px 32px -18px rgba(30, 41, 99, 0.45);
+  --td-field-shadow-focus: 0 0 0 4px rgba(99, 102, 241, 0.28), 0 0 38px -6px rgba(34, 211, 238, 0.55);
+  --td-field-text: #0f172a;
+  --td-field-placeholder: #64748b;
+  --td-field-icon: #475569;
+  --td-field-btn-hover: rgba(99, 102, 241, 0.08);
+  --td-kbd-bg: #f8fafc;
+  --td-kbd-border: rgba(15, 23, 42, 0.14);
+  --td-kbd-text: #64748b;
+  --td-pill-bg: rgba(255, 255, 255, 0.82);
+  --td-pill-border: rgba(255, 255, 255, 0.95);
+  --td-pill-shadow: 0 1px 2px rgba(30, 41, 99, 0.08);
+  --td-pill-text: #334155;
+  --td-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76));
+  --td-glass-border: rgba(255, 255, 255, 0.9);
+  --td-glass-shadow: 0 1px 2px rgba(30, 41, 99, 0.06), 0 16px 34px -22px rgba(30, 41, 99, 0.5);
+  --td-glass-shadow-hover: 0 1px 2px rgba(30, 41, 99, 0.06), 0 18px 40px -18px rgba(34, 211, 238, 0.6);
+  --td-stat-border-hover: rgba(34, 211, 238, 0.45);
+  --td-stat1-bg: linear-gradient(135deg, #22d3ee, #3b82f6);
+  --td-stat1-fg: #ffffff;
+  --td-stat1-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(34, 211, 238, 0.8);
+  --td-stat2-bg: linear-gradient(135deg, #a855f7, #6366f1);
+  --td-stat2-fg: #ffffff;
+  --td-stat2-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(168, 85, 247, 0.8);
+  --td-stat3-bg: linear-gradient(135deg, #34d399, #0ea5e9);
+  --td-stat3-fg: #ffffff;
+  --td-stat3-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(52, 211, 153, 0.75);
+  --td-stat4-bg: linear-gradient(135deg, #fbbf24, #f43f5e);
+  --td-stat4-fg: #ffffff;
+  --td-stat4-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(244, 63, 94, 0.75);
+  --td-chip-bg: rgba(255, 255, 255, 0.86);
+  --td-chip-border: rgba(255, 255, 255, 0.95);
+  --td-chip-shadow: 0 1px 2px rgba(30, 41, 99, 0.08);
+  --td-chip-text: #1e293b;
+  --td-chip-icon: #67e8f9;
+  --td-chip-bg-hover: rgba(34, 211, 238, 0.12);
+  --td-chip-border-hover: rgba(34, 211, 238, 0.6);
+  --td-chip-shadow-hover: 0 0 22px -6px rgba(34, 211, 238, 0.7);
+  /* NLC emblem in the header: brand colours on a white seal */
+    --td-logo-bg: #ffffff;
+  --td-logo-pad: 0.125rem;
+  --td-logo-shadow: 0 0 0 1px rgba(61, 47, 132, 0.14), 0 6px 14px -6px rgba(61, 47, 132, 0.45);
+  /* contact card */
+    --td-dlg-shadow: 0 40px 90px -24px rgba(2, 6, 23, 0.65);
+  --td-dlg-hero-bg: linear-gradient(160deg, #d7f2fb 0%, #e8f4fb 45%, #f5f7fb 100%);
+  --td-dlg-hero-border: rgba(15, 23, 42, 0.07);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(34, 211, 238, 0.3), transparent 70%);
+  --td-dlg-ring: #ffffff;
+  --td-dlg-avatar-glow: 0 14px 40px -6px rgba(99, 102, 241, 0.85);
+  --td-dlg-location: #4338ca;
+  --td-dlg-division: #475569;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(99, 102, 241, 0.16));
+  --td-dlg-btn-shadow: 0 10px 22px -10px rgba(99, 102, 241, 0.95);
+  /* theme picker */
+    --td-pop-shadow: 0 30px 70px -24px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  /* sizes */
+    --td-radius: 1.25rem;
+  --td-mono: "SFMono-Regular", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --td-header-h: 3.5rem;
+  --td-search-h: 4.75rem;
+  --td-field-h: 3rem;
+  --td-logo-size: 2.5rem;
+}
+.sapUiSizeCompact .td-view,
+.td-view.sapUiSizeCompact {
+  --td-header-h: 3rem;
+  --td-search-h: 4rem;
+  --td-field-h: 2.625rem;
+  --td-logo-size: 2.25rem;
+}
+/* =========================== theme: Corporate Indigo =========================== */
+
+.td-view.td-theme-indigo,
+.td-contact-dialog.td-theme-indigo,
+.td-theme-popover.td-theme-indigo,
+.td-number-sheet.td-theme-indigo {
+  --td-grad: linear-gradient(135deg, #3d2f84 0%, #5546b8 55%, #7c6fe0 100%);
+  --td-grad-btn: linear-gradient(135deg, #34287a 0%, #46379f 55%, #5c4cc4 100%);
+  --td-ring: #5546b8;
+  --td-ui5-accent: #4a3ba6;
+  --td-ui5-accent-strong: #3d2f84;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 10px 22px -12px rgba(61, 47, 132, 0.9);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 14px 28px -10px rgba(61, 47, 132, 0.95);
+  --td-danger-grad: linear-gradient(135deg, #f0506e 0%, #c81e45 100%);
+  --td-danger-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 8px 20px -10px rgba(200, 30, 69, 0.9);
+  --td-danger-shadow-pulse: inset 0 0 0 1px rgba(255, 255, 255, 0.26), 0 8px 26px -6px rgba(200, 30, 69, 0.95);
+  --td-bg: #f5f5fa;
+  --td-line: #e9e7f3;
+  --td-text: #1a1736;
+  --td-sub: #4a4766;
+  --td-muted: #69668a;
+  --td-faint: #9a97b6;
+  --td-accent: #3d2f84;
+  --td-link: #4a3ba6;
+  --td-card-border: rgba(61, 47, 132, 0.08);
+  --td-shadow: 0 1px 2px rgba(26, 23, 54, 0.05), 0 22px 48px -24px rgba(45, 36, 110, 0.34);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(61, 47, 132, 0.6), rgba(124, 111, 224, 0.75), transparent);
+  --td-toolbar-bg: rgba(255, 255, 255, 0.95);
+  --td-thead-bg: #fbfbfe;
+  --td-row-line: #efeef7;
+  --td-row-alt: #f9f8fd;
+  --td-row-hover: linear-gradient(90deg, rgba(85, 70, 184, 0.075), rgba(85, 70, 184, 0.025) 55%, transparent);
+  --td-row-hover-edge: #5546b8;
+  --td-group-bg: #f8f7fc;
+  --td-group-text: #3b3760;
+  --td-group-dot-shadow: 0 0 0 3px rgba(85, 70, 184, 0.14);
+  --td-mark: rgba(124, 111, 224, 0.32);
+  --td-num-bg: #f2f0fb;
+  --td-num-text: #3d2f84;
+  --td-num-bg-hover: #ebe8fa;
+  --td-num-border-hover: #cdc6f1;
+  --td-num-text-hover: #34287a;
+  --td-num-shadow-hover: 0 0 0 3px rgba(85, 70, 184, 0.12), 0 6px 14px -10px rgba(61, 47, 132, 0.9);
+  --td-seg-bg: #f3f2f9;
+  --td-seg-border: #e5e2f2;
+  --td-seg-sel-shadow: 0 1px 2px rgba(26, 23, 54, 0.08), 0 6px 14px -8px rgba(61, 47, 132, 0.55);
+  --td-tab-indicator: linear-gradient(90deg, #3d2f84, #6a5bd2);
+  --td-tab-indicator-shadow: 0 -2px 10px rgba(85, 70, 184, 0.35);
+  --td-subtabs-bg: linear-gradient(180deg, #faf9fe, #ffffff);
+  --td-tab-pill-bg: #f5f4fb;
+  --td-tab-pill-border: #e7e4f4;
+  --td-tab-pill-bg-hover: #efedfb;
+  --td-tab-pill-border-hover: #cdc6f1;
+  --td-tab-pill-sel-shadow: 0 4px 12px -6px rgba(61, 47, 132, 0.85);
+  --td-soft-btn-bg: #f3f2f9;
+  --td-scroll-thumb: rgba(105, 102, 138, 0.35);
+  --td-empty-shadow: 0 0 0 8px rgba(85, 70, 184, 0.08), 0 16px 32px -14px rgba(61, 47, 132, 0.8);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 12px 26px -10px rgba(61, 47, 132, 0.9);
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 6px 14px -6px rgba(45, 36, 110, 0.45);
+  --td-av1: linear-gradient(135deg, #6a5bd2, #3d2f84);
+  --td-av2: linear-gradient(135deg, #8b7cf0, #5546b8);
+  --td-av3: linear-gradient(135deg, #a78bfa, #7c3aed);
+  --td-av4: linear-gradient(135deg, #60a5fa, #3b5bdb);
+  --td-av5: linear-gradient(135deg, #38bdf8, #2563eb);
+  --td-av6: linear-gradient(135deg, #7c8cf8, #3d2f84);
+  --td-av7: linear-gradient(135deg, #c084fc, #9333ea);
+  --td-av8: linear-gradient(135deg, #e879f9, #a21caf);
+  --td-av9: linear-gradient(135deg, #94a3b8, #475569);
+  --td-av10: linear-gradient(135deg, #818cf8, #4338ca);
+  --td-top-bg: linear-gradient(100deg, #ebe8fb 0%, #f0eefb 32%, #f4f3fb 62%, #f6f6fb 100%);
+  --td-header-glow: radial-gradient(30% 160% at 0% 0%, rgba(124, 111, 224, 0.2), transparent 70%);
+  --td-aurora: radial-gradient(36% 46% at 18% 55%, rgba(124, 111, 224, 0.3), transparent 70%), radial-gradient(28% 40% at 80% 30%, rgba(61, 47, 132, 0.12), transparent 70%);
+  --td-grid: rgba(61, 47, 132, 0.13);
+  --td-hero-pattern: radial-gradient(circle, var(--td-grid) 1px, transparent 1.5px);
+  --td-hero-pattern-size: 22px 22px;
+  --td-top-line: rgba(61, 47, 132, 0.1);
+  --td-band-shadow: 0 1px 0 rgba(61, 47, 132, 0.08), 0 8px 18px -16px rgba(45, 36, 110, 0.35);
+  --td-top-text: #1a1736;
+  --td-top-sub: #4d4a6e;
+  --td-top-label: #5b587c;
+  --td-focus: rgba(74, 59, 166, 0.9);
+  --td-caret: #4a3ba6;
+  --td-btn-border: rgba(61, 47, 132, 0.14);
+  --td-btn-shadow: 0 1px 2px rgba(26, 23, 54, 0.06);
+  --td-btn-bg-hover: #f6f5fd;
+  --td-btn-border-hover: #cdc6f1;
+  --td-btn-text: #2a2550;
+  --td-field-border: rgba(61, 47, 132, 0.14);
+  --td-field-border-hover: rgba(74, 59, 166, 0.35);
+  --td-field-border-focus: rgba(85, 70, 184, 0.65);
+  --td-field-shadow: 0 1px 2px rgba(26, 23, 54, 0.05), 0 14px 30px -18px rgba(45, 36, 110, 0.45);
+  --td-field-shadow-focus: 0 0 0 4px rgba(85, 70, 184, 0.16), 0 10px 30px -12px rgba(61, 47, 132, 0.45);
+  --td-field-text: #1a1736;
+  --td-field-placeholder: #6f6c90;
+  --td-field-icon: #4d4a6e;
+  --td-field-btn-hover: rgba(85, 70, 184, 0.08);
+  --td-kbd-bg: #f8f7fc;
+  --td-kbd-border: rgba(61, 47, 132, 0.16);
+  --td-kbd-text: #6f6c90;
+  --td-pill-bg: rgba(255, 255, 255, 0.86);
+  --td-pill-shadow: 0 1px 2px rgba(45, 36, 110, 0.08);
+  --td-pill-text: #3b3760;
+  --td-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.82));
+  --td-glass-shadow: 0 1px 2px rgba(45, 36, 110, 0.06), 0 16px 32px -22px rgba(45, 36, 110, 0.5);
+  --td-glass-shadow-hover: 0 1px 2px rgba(45, 36, 110, 0.06), 0 18px 38px -18px rgba(85, 70, 184, 0.55);
+  --td-stat-border-hover: rgba(124, 111, 224, 0.45);
+  --td-stat1-bg: linear-gradient(135deg, #5546b8, #3d2f84);
+  --td-stat1-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(61, 47, 132, 0.75);
+  --td-stat2-bg: linear-gradient(135deg, #9a8cf2, #5546b8);
+  --td-stat2-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(85, 70, 184, 0.7);
+  --td-stat3-bg: linear-gradient(135deg, #6b93f0, #3d4fc4);
+  --td-stat3-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(61, 79, 196, 0.7);
+  --td-stat4-bg: linear-gradient(135deg, #b39af7, #7048d6);
+  --td-stat4-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(112, 72, 214, 0.7);
+  --td-chip-bg: rgba(255, 255, 255, 0.9);
+  --td-chip-shadow: 0 1px 2px rgba(45, 36, 110, 0.08);
+  --td-chip-text: #2a2550;
+  --td-chip-icon: #5546b8;
+  --td-chip-bg-hover: rgba(124, 111, 224, 0.1);
+  --td-chip-border-hover: rgba(124, 111, 224, 0.55);
+  --td-chip-shadow-hover: 0 8px 20px -10px rgba(61, 47, 132, 0.55);
+  --td-dlg-hero-bg: linear-gradient(160deg, #ebe8fb 0%, #f2f0fb 45%, #f8f8fc 100%);
+  --td-dlg-hero-border: rgba(61, 47, 132, 0.08);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(124, 111, 224, 0.28), transparent 70%);
+  --td-dlg-avatar-glow: 0 14px 36px -8px rgba(61, 47, 132, 0.7);
+  --td-dlg-location: #3d2f84;
+  --td-dlg-division: #4d4a6e;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, rgba(124, 111, 224, 0.16), rgba(61, 47, 132, 0.1));
+  --td-dlg-btn-shadow: 0 10px 20px -10px rgba(61, 47, 132, 0.9);
+  --td-pop-shadow: 0 30px 70px -24px rgba(45, 36, 110, 0.45), 0 0 0 1px rgba(61, 47, 132, 0.08);
+}
+/* =========================== theme: Executive Ivory =========================== */
+
+.td-view.td-theme-ivory,
+.td-contact-dialog.td-theme-ivory,
+.td-theme-popover.td-theme-ivory,
+.td-number-sheet.td-theme-ivory {
+  /* gold for highlights, deep navy for actions */
+    --td-grad: linear-gradient(135deg, #d8b878 0%, #b48d4f 55%, #96713a 100%);
+  --td-grad-btn: linear-gradient(135deg, #1b355a 0%, #24467a 60%, #2d5690 100%);
+  --td-ring: #b48d4f;
+  --td-ui5-accent: #24467a;
+  --td-ui5-accent-strong: #1b355a;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 10px 22px -12px rgba(27, 53, 90, 0.85);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 14px 28px -10px rgba(27, 53, 90, 0.9);
+  --td-danger-grad: linear-gradient(135deg, #d6455d 0%, #a51d36 100%);
+  --td-danger-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 8px 20px -10px rgba(165, 29, 54, 0.85);
+  --td-danger-shadow-pulse: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 8px 26px -6px rgba(165, 29, 54, 0.9);
+  --td-bg: #f7f5ef;
+  --td-surface: #fffdf9;
+  --td-line: #ece6d9;
+  --td-text: #1d2330;
+  --td-sub: #4a4f5c;
+  --td-muted: #6e6a61;
+  --td-faint: #a29b8c;
+  --td-accent: #1e3a5f;
+  --td-link: #24467a;
+  --td-card-border: rgba(120, 96, 52, 0.12);
+  --td-shadow: 0 1px 2px rgba(60, 46, 20, 0.05), 0 22px 46px -26px rgba(60, 46, 20, 0.32);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(180, 141, 79, 0.85), transparent);
+  --td-toolbar-bg: rgba(255, 253, 249, 0.95);
+  --td-thead-bg: #fcfaf5;
+  --td-row-line: #f1ece2;
+  --td-row-alt: #fbf8f2;
+  --td-row-hover: linear-gradient(90deg, rgba(180, 141, 79, 0.09), rgba(180, 141, 79, 0.03) 55%, transparent);
+  --td-row-hover-edge: #b48d4f;
+  --td-group-bg: #faf7f0;
+  --td-group-text: #3a3f4c;
+  --td-group-dot-shadow: 0 0 0 3px rgba(180, 141, 79, 0.16);
+  --td-mark: rgba(212, 178, 122, 0.45);
+  --td-num-bg: #f6f1e6;
+  --td-num-text: #1e3a5f;
+  --td-num-bg-hover: #f1e9d8;
+  --td-num-border-hover: #dcc69c;
+  --td-num-text-hover: #172e4c;
+  --td-num-shadow-hover: 0 0 0 3px rgba(180, 141, 79, 0.14), 0 6px 14px -10px rgba(120, 90, 40, 0.8);
+  --td-seg-bg: #f4f0e7;
+  --td-seg-border: #e8e0cf;
+  --td-seg-sel-bg: #fffdf9;
+  --td-seg-sel-shadow: 0 1px 2px rgba(60, 46, 20, 0.08), 0 6px 14px -8px rgba(120, 90, 40, 0.45);
+  --td-tab-indicator: linear-gradient(90deg, #c9a465, #a8803f);
+  --td-tab-indicator-shadow: 0 -2px 10px rgba(180, 141, 79, 0.35);
+  --td-subtabs-bg: linear-gradient(180deg, #fbf8f1, #fffdf9);
+  --td-tab-pill-bg: #f7f3ea;
+  --td-tab-pill-border: #ebe3d2;
+  --td-tab-pill-bg-hover: #f3ecdd;
+  --td-tab-pill-border-hover: #dcc69c;
+  --td-tab-pill-sel-shadow: 0 4px 12px -6px rgba(27, 53, 90, 0.8);
+  --td-soft-btn-bg: #f4f0e7;
+  --td-scroll-thumb: rgba(110, 106, 97, 0.35);
+  --td-empty-shadow: 0 0 0 8px rgba(180, 141, 79, 0.1), 0 16px 32px -14px rgba(120, 90, 40, 0.7);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 12px 26px -10px rgba(27, 53, 90, 0.85);
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 6px 14px -6px rgba(60, 46, 20, 0.45);
+  --td-av1: linear-gradient(135deg, #c9a465, #9a7438);
+  --td-av2: linear-gradient(135deg, #b4536a, #7d2a43);
+  --td-av3: linear-gradient(135deg, #8d6bb3, #5c3f86);
+  --td-av4: linear-gradient(135deg, #4f74a8, #1e3a5f);
+  --td-av5: linear-gradient(135deg, #5b8fb9, #2d5690);
+  --td-av6: linear-gradient(135deg, #4f9a8c, #2b6b5f);
+  --td-av7: linear-gradient(135deg, #7a9e62, #46703a);
+  --td-av8: linear-gradient(135deg, #c27c4e, #8d4f28);
+  --td-av9: linear-gradient(135deg, #8a8f9c, #555b69);
+  --td-av10: linear-gradient(135deg, #a08560, #6f5636);
+  --td-top-bg: linear-gradient(100deg, #f5ecda 0%, #f8f2e6 34%, #faf7f0 64%, #fbf9f4 100%);
+  --td-header-glow: radial-gradient(30% 160% at 0% 0%, rgba(212, 178, 122, 0.24), transparent 70%);
+  --td-aurora: radial-gradient(38% 48% at 16% 55%, rgba(212, 178, 122, 0.34), transparent 70%), radial-gradient(28% 40% at 82% 28%, rgba(30, 58, 95, 0.07), transparent 70%);
+  --td-grid: rgba(150, 113, 58, 0.075);
+  --td-hero-pattern: repeating-linear-gradient(135deg, var(--td-grid) 0 1px, transparent 1px 15px);
+  --td-hero-pattern-size: auto;
+  --td-top-line: rgba(150, 113, 58, 0.18);
+  --td-band-shadow: 0 1px 0 rgba(150, 113, 58, 0.12), 0 8px 18px -16px rgba(60, 46, 20, 0.3);
+  --td-top-text: #1d2330;
+  --td-top-sub: #545966;
+  --td-top-label: #5f5a50;
+  --td-focus: rgba(36, 70, 122, 0.9);
+  --td-caret: #b48d4f;
+  --td-btn-bg: #fffdf9;
+  --td-btn-border: rgba(120, 96, 52, 0.18);
+  --td-btn-shadow: 0 1px 2px rgba(60, 46, 20, 0.06);
+  --td-btn-bg-hover: #fbf6ec;
+  --td-btn-border-hover: #dcc69c;
+  --td-btn-text: #1d2330;
+  --td-field-bg: #fffdf9;
+  --td-field-bg-hover: #fffdf9;
+  --td-field-bg-focus: #fffdf9;
+  --td-field-border: rgba(120, 96, 52, 0.18);
+  --td-field-border-hover: rgba(180, 141, 79, 0.45);
+  --td-field-border-focus: rgba(180, 141, 79, 0.8);
+  --td-field-shadow: 0 1px 2px rgba(60, 46, 20, 0.05), 0 14px 30px -20px rgba(60, 46, 20, 0.4);
+  --td-field-shadow-focus: 0 0 0 4px rgba(212, 178, 122, 0.24), 0 10px 28px -14px rgba(120, 90, 40, 0.45);
+  --td-field-text: #1d2330;
+  --td-field-placeholder: #7a7468;
+  --td-field-icon: #545966;
+  --td-field-btn-hover: rgba(180, 141, 79, 0.1);
+  --td-kbd-bg: #faf7f0;
+  --td-kbd-border: rgba(120, 96, 52, 0.2);
+  --td-kbd-text: #7a7468;
+  --td-pill-bg: rgba(255, 253, 249, 0.88);
+  --td-pill-border: rgba(255, 255, 255, 0.9);
+  --td-pill-shadow: 0 1px 2px rgba(60, 46, 20, 0.08);
+  --td-pill-text: #3a3f4c;
+  --td-glass-bg: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(255, 253, 249, 0.84));
+  --td-glass-shadow: 0 1px 2px rgba(60, 46, 20, 0.06), 0 16px 30px -22px rgba(60, 46, 20, 0.45);
+  --td-glass-shadow-hover: 0 1px 2px rgba(60, 46, 20, 0.06), 0 18px 36px -18px rgba(150, 113, 58, 0.5);
+  --td-stat-border-hover: rgba(212, 178, 122, 0.6);
+  --td-stat1-bg: linear-gradient(135deg, #2d5690, #1b355a);
+  --td-stat1-fg: #f1dcae;
+  --td-stat1-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 10px 22px -10px rgba(27, 53, 90, 0.7);
+  --td-stat2-bg: linear-gradient(135deg, #d8b878, #a8803f);
+  --td-stat2-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -10px rgba(150, 113, 58, 0.7);
+  --td-stat3-bg: linear-gradient(135deg, #5aa594, #2b6b5f);
+  --td-stat3-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(43, 107, 95, 0.65);
+  --td-stat4-bg: linear-gradient(135deg, #c0627a, #7d2a43);
+  --td-stat4-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 10px 22px -10px rgba(125, 42, 67, 0.65);
+  --td-chip-bg: rgba(255, 253, 249, 0.92);
+  --td-chip-border: rgba(255, 255, 255, 0.9);
+  --td-chip-shadow: 0 1px 2px rgba(60, 46, 20, 0.08);
+  --td-chip-text: #1d2330;
+  --td-chip-icon: #b48d4f;
+  --td-chip-bg-hover: rgba(212, 178, 122, 0.16);
+  --td-chip-border-hover: rgba(180, 141, 79, 0.55);
+  --td-chip-shadow-hover: 0 8px 18px -10px rgba(120, 90, 40, 0.5);
+  --td-dlg-shadow: 0 40px 90px -24px rgba(40, 30, 12, 0.55);
+  --td-dlg-hero-bg: linear-gradient(160deg, #f5ecd9 0%, #f8f2e6 45%, #fbf9f4 100%);
+  --td-dlg-hero-border: rgba(150, 113, 58, 0.14);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(212, 178, 122, 0.32), transparent 70%);
+  --td-dlg-ring: #fffdf9;
+  --td-dlg-avatar-glow: 0 14px 34px -10px rgba(120, 90, 40, 0.6);
+  --td-dlg-location: #1e3a5f;
+  --td-dlg-division: #5f5a50;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, rgba(212, 178, 122, 0.22), rgba(30, 58, 95, 0.08));
+  --td-dlg-btn-shadow: 0 10px 20px -10px rgba(27, 53, 90, 0.85);
+  --td-pop-shadow: 0 30px 70px -24px rgba(60, 46, 20, 0.4), 0 0 0 1px rgba(120, 96, 52, 0.1);
+}
+/* =========================== theme: Fresh Teal =========================== */
+
+.td-view.td-theme-teal,
+.td-contact-dialog.td-theme-teal,
+.td-theme-popover.td-theme-teal,
+.td-number-sheet.td-theme-teal {
+  --td-grad: linear-gradient(135deg, #2dd4bf 0%, #0d9488 50%, #059669 100%);
+  --td-grad-btn: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
+  --td-ring: #0d9488;
+  --td-ui5-accent: #0f766e;
+  --td-ui5-accent-strong: #115e59;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 10px 22px -10px rgba(13, 148, 136, 0.85);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.26), 0 12px 28px -8px rgba(13, 148, 136, 0.95);
+  --td-bg: #f1f7f6;
+  --td-line: #e2eeec;
+  --td-text: #0c2a2a;
+  --td-sub: #3b5958;
+  --td-muted: #5a7675;
+  --td-faint: #8ea7a5;
+  --td-accent: #0f766e;
+  --td-link: #0f766e;
+  --td-card-border: rgba(15, 118, 110, 0.08);
+  --td-shadow: 0 1px 2px rgba(12, 42, 42, 0.05), 0 22px 48px -24px rgba(12, 60, 58, 0.32);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.9), rgba(16, 185, 129, 0.9), transparent);
+  --td-toolbar-bg: rgba(255, 255, 255, 0.95);
+  --td-thead-bg: #fafdfc;
+  --td-row-line: #ebf3f2;
+  --td-row-alt: #f6fbfa;
+  --td-row-hover: linear-gradient(90deg, rgba(20, 184, 166, 0.08), rgba(16, 185, 129, 0.03) 55%, transparent);
+  --td-row-hover-edge: #14b8a6;
+  --td-group-bg: #f5faf9;
+  --td-group-text: #2f4b4a;
+  --td-group-dot-shadow: 0 0 10px rgba(20, 184, 166, 0.6);
+  --td-mark: rgba(45, 212, 191, 0.38);
+  --td-num-bg: #e9f7f4;
+  --td-num-text: #0f6b63;
+  --td-num-bg-hover: #dff4ef;
+  --td-num-border-hover: #99e2d4;
+  --td-num-text-hover: #0f766e;
+  --td-num-shadow-hover: 0 0 0 3px rgba(20, 184, 166, 0.14), 0 6px 14px -10px rgba(13, 148, 136, 0.9);
+  --td-seg-bg: #eef6f5;
+  --td-seg-border: #dceceb;
+  --td-seg-sel-shadow: 0 1px 2px rgba(12, 42, 42, 0.08), 0 6px 14px -8px rgba(13, 148, 136, 0.5);
+  --td-tab-indicator: linear-gradient(90deg, #2dd4bf, #059669);
+  --td-tab-indicator-shadow: 0 -2px 12px rgba(20, 184, 166, 0.5);
+  --td-subtabs-bg: linear-gradient(180deg, #f4fbfa, #ffffff);
+  --td-tab-pill-bg: #f1f8f7;
+  --td-tab-pill-border: #e0eeec;
+  --td-tab-pill-bg-hover: #e6f6f3;
+  --td-tab-pill-border-hover: #99e2d4;
+  --td-tab-pill-sel-shadow: 0 4px 12px -6px rgba(13, 148, 136, 0.85);
+  --td-soft-btn-bg: #eef6f5;
+  --td-scroll-thumb: rgba(90, 118, 117, 0.35);
+  --td-empty-shadow: 0 0 0 8px rgba(20, 184, 166, 0.1), 0 16px 32px -12px rgba(13, 148, 136, 0.8);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 12px 26px -8px rgba(13, 148, 136, 0.85);
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26), 0 6px 14px -6px rgba(12, 60, 58, 0.45);
+  --td-av1: linear-gradient(135deg, #34d399, #059669);
+  --td-av2: linear-gradient(135deg, #2dd4bf, #0d9488);
+  --td-av3: linear-gradient(135deg, #22d3ee, #0891b2);
+  --td-av4: linear-gradient(135deg, #38bdf8, #0284c7);
+  --td-av5: linear-gradient(135deg, #84cc16, #3f6212);
+  --td-av6: linear-gradient(135deg, #5eead4, #0f766e);
+  --td-av7: linear-gradient(135deg, #4ade80, #15803d);
+  --td-av8: linear-gradient(135deg, #67e8f9, #0e7490);
+  --td-av9: linear-gradient(135deg, #94a3b8, #475569);
+  --td-av10: linear-gradient(135deg, #fbbf24, #d97706);
+  --td-top-bg: linear-gradient(100deg, #d8f5ee 0%, #e4f6f2 30%, #eef7f5 60%, #f2f7f6 100%);
+  --td-header-glow: radial-gradient(32% 160% at 0% 0%, rgba(45, 212, 191, 0.24), transparent 70%);
+  --td-aurora: radial-gradient(38% 48% at 16% 55%, rgba(45, 212, 191, 0.38), transparent 70%), radial-gradient(26% 36% at 72% 35%, rgba(16, 185, 129, 0.16), transparent 70%);
+  --td-grid: rgba(15, 118, 110, 0.08);
+  --td-top-line: rgba(15, 118, 110, 0.1);
+  --td-band-shadow: 0 1px 0 rgba(15, 118, 110, 0.08), 0 8px 18px -16px rgba(12, 60, 58, 0.3);
+  --td-top-text: #0c2a2a;
+  --td-top-sub: #3d5c5a;
+  --td-top-label: #4b6866;
+  --td-focus: rgba(13, 148, 136, 0.9);
+  --td-caret: #0d9488;
+  --td-btn-border: rgba(15, 118, 110, 0.14);
+  --td-btn-shadow: 0 1px 2px rgba(12, 42, 42, 0.06);
+  --td-btn-bg-hover: #f2fbf9;
+  --td-btn-border-hover: #99e2d4;
+  --td-btn-text: #12302f;
+  --td-field-border: rgba(15, 118, 110, 0.14);
+  --td-field-border-hover: rgba(13, 148, 136, 0.35);
+  --td-field-border-focus: rgba(20, 184, 166, 0.8);
+  --td-field-shadow: 0 1px 2px rgba(12, 42, 42, 0.05), 0 14px 32px -18px rgba(12, 70, 66, 0.45);
+  --td-field-shadow-focus: 0 0 0 4px rgba(20, 184, 166, 0.2), 0 0 34px -8px rgba(16, 185, 129, 0.5);
+  --td-field-text: #0c2a2a;
+  --td-field-placeholder: #5e7a78;
+  --td-field-icon: #3d5c5a;
+  --td-field-btn-hover: rgba(20, 184, 166, 0.1);
+  --td-kbd-bg: #f5faf9;
+  --td-kbd-border: rgba(15, 118, 110, 0.16);
+  --td-kbd-text: #5e7a78;
+  --td-pill-shadow: 0 1px 2px rgba(12, 70, 66, 0.08);
+  --td-pill-text: #2f4b4a;
+  --td-glass-shadow: 0 1px 2px rgba(12, 70, 66, 0.06), 0 16px 34px -22px rgba(12, 70, 66, 0.5);
+  --td-glass-shadow-hover: 0 1px 2px rgba(12, 70, 66, 0.06), 0 18px 40px -18px rgba(20, 184, 166, 0.6);
+  --td-stat-border-hover: rgba(45, 212, 191, 0.5);
+  --td-stat1-bg: linear-gradient(135deg, #2dd4bf, #0d9488);
+  --td-stat1-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(20, 184, 166, 0.75);
+  --td-stat2-bg: linear-gradient(135deg, #34d399, #059669);
+  --td-stat2-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(16, 185, 129, 0.75);
+  --td-stat3-bg: linear-gradient(135deg, #22d3ee, #0284c7);
+  --td-stat3-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(14, 165, 233, 0.7);
+  --td-stat4-bg: linear-gradient(135deg, #a3e635, #16a34a);
+  --td-stat4-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px -8px rgba(22, 163, 74, 0.7);
+  --td-chip-bg: rgba(255, 255, 255, 0.88);
+  --td-chip-shadow: 0 1px 2px rgba(12, 70, 66, 0.08);
+  --td-chip-text: #12302f;
+  --td-chip-icon: #0d9488;
+  --td-chip-bg-hover: rgba(45, 212, 191, 0.12);
+  --td-chip-border-hover: rgba(45, 212, 191, 0.6);
+  --td-chip-shadow-hover: 0 0 22px -6px rgba(20, 184, 166, 0.6);
+  --td-dlg-hero-bg: linear-gradient(160deg, #d8f5ee 0%, #e9f7f3 45%, #f4f8f7 100%);
+  --td-dlg-hero-border: rgba(15, 118, 110, 0.08);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(45, 212, 191, 0.3), transparent 70%);
+  --td-dlg-avatar-glow: 0 14px 36px -8px rgba(13, 148, 136, 0.7);
+  --td-dlg-location: #0f766e;
+  --td-dlg-division: #3d5c5a;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.18), rgba(16, 185, 129, 0.12));
+  --td-dlg-btn-shadow: 0 10px 22px -10px rgba(13, 148, 136, 0.9);
+  --td-pop-shadow: 0 30px 70px -24px rgba(12, 60, 58, 0.42), 0 0 0 1px rgba(15, 118, 110, 0.08);
+}
+/* =========================== theme: Slate Sapphire =========================== */
+
+.td-view.td-theme-slate,
+.td-contact-dialog.td-theme-slate,
+.td-theme-popover.td-theme-slate,
+.td-number-sheet.td-theme-slate {
+  --td-grad: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
+  --td-grad-btn: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e40af 100%);
+  --td-ring: #2563eb;
+  --td-ui5-accent: #1d4ed8;
+  --td-ui5-accent-strong: #1e40af;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 8px 18px -10px rgba(29, 78, 216, 0.8);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 12px 24px -10px rgba(29, 78, 216, 0.9);
+  --td-danger-grad: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  --td-danger-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 8px 18px -10px rgba(185, 28, 28, 0.8);
+  --td-danger-shadow-pulse: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 8px 24px -6px rgba(185, 28, 28, 0.9);
+  --td-bg: #f3f5f8;
+  --td-line: #e5e8ee;
+  --td-accent: #1d4ed8;
+  --td-link: #1d4ed8;
+  --td-card-border: rgba(15, 23, 42, 0.08);
+  --td-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 18px 40px -24px rgba(15, 23, 42, 0.28);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.7), transparent);
+  --td-toolbar-bg: rgba(255, 255, 255, 0.96);
+  --td-thead-bg: #f9fafb;
+  --td-row-line: #eef0f4;
+  --td-row-alt: #f8f9fb;
+  --td-row-hover: linear-gradient(90deg, rgba(37, 99, 235, 0.06), rgba(37, 99, 235, 0.02) 55%, transparent);
+  --td-row-hover-edge: #2563eb;
+  --td-group-dot: #2563eb;
+  --td-group-dot-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  --td-mark: rgba(59, 130, 246, 0.25);
+  --td-num-bg: #eff4ff;
+  --td-num-text: #1e40af;
+  --td-num-bg-hover: #e6eeff;
+  --td-num-border-hover: #bfd3fe;
+  --td-num-text-hover: #1d4ed8;
+  --td-num-shadow-hover: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 6px 14px -10px rgba(29, 78, 216, 0.8);
+  --td-seg-sel-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 4px 12px -6px rgba(15, 23, 42, 0.25);
+  --td-tab-indicator: linear-gradient(90deg, #1d4ed8, #1d4ed8);
+  --td-tab-indicator-shadow: none;
+  --td-subtabs-bg: linear-gradient(180deg, #fafbfc, #ffffff);
+  --td-tab-pill-bg: #f4f6f9;
+  --td-tab-pill-border: #e5e8ee;
+  --td-tab-pill-bg-hover: #eef3ff;
+  --td-tab-pill-border-hover: #bfd3fe;
+  --td-tab-pill-sel-bg: linear-gradient(135deg, #1d4ed8, #1d4ed8);
+  --td-tab-pill-sel-shadow: 0 4px 10px -6px rgba(29, 78, 216, 0.8);
+  --td-empty-shadow: 0 0 0 8px rgba(37, 99, 235, 0.08), 0 14px 28px -12px rgba(29, 78, 216, 0.6);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 10px 22px -8px rgba(29, 78, 216, 0.75);
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 6px 14px -6px rgba(15, 23, 42, 0.4);
+  --td-av1: linear-gradient(135deg, #60a5fa, #1d4ed8);
+  --td-av2: linear-gradient(135deg, #94a3b8, #475569);
+  --td-av3: linear-gradient(135deg, #818cf8, #4338ca);
+  --td-av4: linear-gradient(135deg, #38bdf8, #0369a1);
+  --td-av5: linear-gradient(135deg, #7dd3fc, #2563eb);
+  --td-av6: linear-gradient(135deg, #64748b, #1e293b);
+  --td-av7: linear-gradient(135deg, #5eead4, #0f766e);
+  --td-av8: linear-gradient(135deg, #a5b4fc, #6366f1);
+  --td-av9: linear-gradient(135deg, #93c5fd, #3b82f6);
+  --td-av10: linear-gradient(135deg, #cbd5e1, #64748b);
+  --td-top-bg: linear-gradient(100deg, #e6edf8 0%, #edf1f8 34%, #f1f4f8 64%, #f3f5f8 100%);
+  --td-header-glow: radial-gradient(30% 160% at 0% 0%, rgba(59, 130, 246, 0.14), transparent 70%);
+  /* a soft light band drifting across the hero */
+    --td-aurora: linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, 0.85) 46%, transparent 60%), radial-gradient(36% 46% at 16% 55%, rgba(59, 130, 246, 0.2), transparent 70%);
+  --td-grid: rgba(71, 85, 105, 0.07);
+  --td-band-shadow: 0 1px 0 rgba(15, 23, 42, 0.07), 0 8px 18px -16px rgba(15, 23, 42, 0.25);
+  --td-top-sub: #475569;
+  --td-focus: rgba(29, 78, 216, 0.9);
+  --td-caret: #1d4ed8;
+  --td-btn-border: rgba(15, 23, 42, 0.12);
+  --td-btn-bg-hover: #f5f8ff;
+  --td-btn-border-hover: #bfd3fe;
+  --td-field-border: rgba(15, 23, 42, 0.12);
+  --td-field-border-hover: rgba(29, 78, 216, 0.3);
+  --td-field-border-focus: rgba(37, 99, 235, 0.7);
+  --td-field-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.35);
+  --td-field-shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.16), 0 10px 26px -14px rgba(29, 78, 216, 0.45);
+  --td-field-btn-hover: rgba(37, 99, 235, 0.08);
+  --td-pill-bg: rgba(255, 255, 255, 0.92);
+  --td-pill-border: rgba(15, 23, 42, 0.06);
+  --td-pill-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --td-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.9));
+  --td-glass-border: rgba(15, 23, 42, 0.06);
+  --td-glass-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 26px -20px rgba(15, 23, 42, 0.35);
+  --td-glass-shadow-hover: 0 1px 2px rgba(15, 23, 42, 0.05), 0 16px 32px -18px rgba(29, 78, 216, 0.4);
+  --td-stat-border-hover: rgba(37, 99, 235, 0.35);
+  /* soft icon tiles */
+    --td-stat1-bg: linear-gradient(135deg, #eaf1ff, #dfe9ff);
+  --td-stat1-fg: #1d4ed8;
+  --td-stat1-shadow: inset 0 0 0 1px rgba(29, 78, 216, 0.1);
+  --td-stat2-bg: linear-gradient(135deg, #eef0ff, #e3e6ff);
+  --td-stat2-fg: #4338ca;
+  --td-stat2-shadow: inset 0 0 0 1px rgba(67, 56, 202, 0.1);
+  --td-stat3-bg: linear-gradient(135deg, #e7f5fb, #d9eef8);
+  --td-stat3-fg: #0369a1;
+  --td-stat3-shadow: inset 0 0 0 1px rgba(3, 105, 161, 0.1);
+  --td-stat4-bg: linear-gradient(135deg, #f1f5f9, #e6ebf1);
+  --td-stat4-fg: #334155;
+  --td-stat4-shadow: inset 0 0 0 1px rgba(51, 65, 85, 0.1);
+  --td-chip-bg: #ffffff;
+  --td-chip-border: rgba(15, 23, 42, 0.08);
+  --td-chip-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --td-chip-icon: #2563eb;
+  --td-chip-bg-hover: #f5f8ff;
+  --td-chip-border-hover: rgba(37, 99, 235, 0.4);
+  --td-chip-shadow-hover: 0 6px 16px -10px rgba(29, 78, 216, 0.5);
+  --td-dlg-hero-bg: linear-gradient(160deg, #e6edf8 0%, #eef2f8 45%, #f6f7fa 100%);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(59, 130, 246, 0.18), transparent 70%);
+  --td-dlg-avatar-glow: 0 12px 30px -10px rgba(15, 23, 42, 0.45);
+  --td-dlg-location: #1d4ed8;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, #eef3ff, #e6eeff);
+  --td-dlg-btn-shadow: 0 8px 18px -10px rgba(29, 78, 216, 0.8);
+}
+/* =========================== theme: Midnight (dark) =========================== */
+
+.td-view.td-theme-midnight,
+.td-contact-dialog.td-theme-midnight,
+.td-theme-popover.td-theme-midnight,
+.td-number-sheet.td-theme-midnight {
+  color-scheme: dark;
+  --td-grad: linear-gradient(135deg, #22d3ee 0%, #818cf8 55%, #c084fc 100%);
+  --td-ring: #818cf8;
+  --td-ui5-accent: #a5b4fc;
+  --td-ui5-accent-strong: #c7d2fe;
+  --td-btn-primary-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 10px 26px -10px rgba(99, 102, 241, 0.8);
+  --td-btn-primary-shadow-hover: inset 0 0 0 1px rgba(255, 255, 255, 0.28), 0 12px 30px -8px rgba(99, 102, 241, 0.9);
+  --td-danger-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 8px 22px -8px rgba(244, 63, 94, 0.7);
+  --td-danger-shadow-pulse: inset 0 0 0 1px rgba(255, 255, 255, 0.26), 0 8px 28px -4px rgba(244, 63, 94, 0.85);
+  --td-bg: #0b1019;
+  --td-surface: #121a27;
+  --td-line: rgba(148, 163, 184, 0.14);
+  --td-text: #e8ecf4;
+  --td-sub: #b3bccd;
+  --td-muted: #8f99ad;
+  --td-faint: #707a90;
+  --td-accent: #a5b4fc;
+  --td-link: #93a5ff;
+  --td-card-border: rgba(148, 163, 184, 0.12);
+  --td-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 50px -24px rgba(0, 0, 0, 0.75);
+  --td-card-edge: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.8), rgba(129, 140, 248, 0.8), rgba(192, 132, 252, 0.8), transparent);
+  --td-toolbar-bg: rgba(18, 26, 39, 0.94);
+  --td-thead-bg: #141d2b;
+  --td-row-line: rgba(148, 163, 184, 0.1);
+  --td-row-alt: #0f1622;
+  --td-row-hover: linear-gradient(90deg, rgba(129, 140, 248, 0.13), rgba(34, 211, 238, 0.05) 55%, transparent);
+  --td-row-hover-edge: #818cf8;
+  --td-group-bg: #0f1622;
+  --td-group-text: #c3cad8;
+  --td-group-dot-shadow: 0 0 10px rgba(129, 140, 248, 0.7);
+  --td-mark: rgba(34, 211, 238, 0.32);
+  --td-num-bg: rgba(129, 140, 248, 0.13);
+  --td-num-text: #c7d2fe;
+  --td-num-bg-hover: rgba(129, 140, 248, 0.2);
+  --td-num-border-hover: rgba(165, 180, 252, 0.45);
+  --td-num-text-hover: #e0e7ff;
+  --td-num-shadow-hover: 0 0 0 3px rgba(129, 140, 248, 0.14), 0 6px 16px -10px rgba(0, 0, 0, 0.8);
+  --td-seg-bg: #0e1520;
+  --td-seg-border: rgba(148, 163, 184, 0.16);
+  --td-seg-sel-bg: #1e293b;
+  --td-seg-sel-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -6px rgba(99, 102, 241, 0.55);
+  --td-tab-indicator-shadow: 0 -2px 14px rgba(129, 140, 248, 0.6);
+  --td-subtabs-bg: linear-gradient(180deg, #111926, #121a27);
+  --td-tab-pill-bg: #172131;
+  --td-tab-pill-border: rgba(148, 163, 184, 0.14);
+  --td-tab-pill-bg-hover: #1c283b;
+  --td-tab-pill-border-hover: rgba(165, 180, 252, 0.4);
+  --td-tab-pill-sel-shadow: 0 4px 14px -6px rgba(99, 102, 241, 0.8);
+  --td-soft-btn-bg: #1a2434;
+  --td-scroll-thumb: rgba(148, 163, 184, 0.3);
+  --td-empty-shadow: 0 0 0 8px rgba(129, 140, 248, 0.1), 0 16px 34px -12px rgba(99, 102, 241, 0.6);
+  --td-fab-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 12px 28px -8px rgba(0, 0, 0, 0.7);
+  --td-avatar-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 6px 14px -6px rgba(0, 0, 0, 0.6);
+  --td-top-bg: linear-gradient(100deg, #0f1b2d 0%, #0d1726 35%, #0c121e 65%, #0b1019 100%);
+  --td-header-glow: radial-gradient(32% 160% at 0% 0%, rgba(34, 211, 238, 0.16), transparent 70%);
+  --td-aurora: radial-gradient(38% 48% at 16% 55%, rgba(34, 211, 238, 0.24), transparent 70%), radial-gradient(30% 42% at 74% 30%, rgba(129, 140, 248, 0.18), transparent 70%);
+  --td-grid: rgba(148, 163, 184, 0.07);
+  --td-top-line: rgba(148, 163, 184, 0.12);
+  --td-band-shadow: 0 1px 0 rgba(148, 163, 184, 0.1), 0 10px 22px -16px rgba(0, 0, 0, 0.8);
+  --td-top-text: #eef1f7;
+  --td-top-sub: #a7b1c4;
+  --td-top-label: #9aa4b8;
+  --td-focus: rgba(165, 180, 252, 0.9);
+  --td-caret: #22d3ee;
+  --td-btn-bg: rgba(255, 255, 255, 0.06);
+  --td-btn-border: rgba(255, 255, 255, 0.12);
+  --td-btn-shadow: none;
+  --td-btn-bg-hover: rgba(255, 255, 255, 0.1);
+  --td-btn-border-hover: rgba(165, 180, 252, 0.45);
+  --td-btn-text: #e8ecf4;
+  --td-field-bg: #121b2a;
+  --td-field-bg-hover: #142033;
+  --td-field-bg-focus: #142033;
+  --td-field-border: rgba(148, 163, 184, 0.2);
+  --td-field-border-hover: rgba(165, 180, 252, 0.4);
+  --td-field-border-focus: rgba(34, 211, 238, 0.7);
+  --td-field-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 32px -18px rgba(0, 0, 0, 0.8);
+  --td-field-shadow-focus: 0 0 0 4px rgba(99, 102, 241, 0.3), 0 0 38px -6px rgba(34, 211, 238, 0.4);
+  --td-field-text: #eef1f7;
+  --td-field-placeholder: #8f99ad;
+  --td-field-icon: #a7b1c4;
+  --td-field-btn-hover: rgba(255, 255, 255, 0.08);
+  --td-kbd-bg: rgba(255, 255, 255, 0.06);
+  --td-kbd-border: rgba(255, 255, 255, 0.14);
+  --td-kbd-text: #a7b1c4;
+  --td-pill-bg: rgba(255, 255, 255, 0.06);
+  --td-pill-border: rgba(255, 255, 255, 0.1);
+  --td-pill-shadow: none;
+  --td-pill-text: #c9d0dd;
+  --td-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035));
+  --td-glass-border: rgba(255, 255, 255, 0.09);
+  --td-glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 34px -22px rgba(0, 0, 0, 0.8);
+  --td-glass-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 40px -18px rgba(34, 211, 238, 0.35);
+  --td-stat-border-hover: rgba(34, 211, 238, 0.4);
+  --td-chip-bg: rgba(255, 255, 255, 0.06);
+  --td-chip-border: rgba(255, 255, 255, 0.1);
+  --td-chip-shadow: none;
+  --td-chip-text: #e2e7f0;
+  --td-chip-bg-hover: rgba(34, 211, 238, 0.12);
+  --td-chip-border-hover: rgba(34, 211, 238, 0.5);
+  --td-chip-shadow-hover: 0 0 22px -6px rgba(34, 211, 238, 0.5);
+  /* the white seal keeps the brand colour readable on dark; soft glow instead of a shadow */
+    --td-logo-shadow: 0 0 0 1px rgba(255, 255, 255, 0.24), 0 0 18px -2px rgba(34, 211, 238, 0.45);
+  --td-dlg-shadow: 0 40px 90px -24px rgba(0, 0, 0, 0.85);
+  --td-dlg-hero-bg: linear-gradient(160deg, #132238 0%, #111b2b 45%, #121a27 100%);
+  --td-dlg-hero-border: rgba(148, 163, 184, 0.12);
+  --td-dlg-aurora: radial-gradient(40% 45% at 20% 20%, rgba(34, 211, 238, 0.2), transparent 70%);
+  --td-dlg-ring: #121a27;
+  --td-dlg-avatar-glow: 0 14px 40px -6px rgba(99, 102, 241, 0.6);
+  --td-dlg-location: #a5b4fc;
+  --td-dlg-division: #9aa4b8;
+  --td-dlg-row-icon-bg: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(129, 140, 248, 0.16));
+  --td-dlg-btn-shadow: 0 10px 22px -10px rgba(99, 102, 241, 0.7);
+  --td-pop-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(148, 163, 184, 0.14);
+  /* standard UI5 controls inside these areas follow the dark palette (also without the SAP dark theme) */
+    --sapBackgroundColor: var(--td-bg);
+  --sapTextColor: var(--td-text);
+  --sapTitleColor: var(--td-text);
+  --sapGroup_TitleTextColor: var(--td-text);
+  --sapList_TextColor: var(--td-text);
+  --sapList_TableGroupHeaderTextColor: var(--td-group-text);
+  --sapList_HeaderTextColor: var(--td-faint);
+  --sapContent_LabelColor: var(--td-muted);
+  --sapContent_IconColor: var(--td-sub);
+  --sapContent_NonInteractiveIconColor: var(--td-muted);
+  --sapList_BorderColor: var(--td-row-line);
+  --sapList_Hover_Background: #172134;
+  --sapList_Active_Background: #1d2a42;
+  --sapList_SelectionBackgroundColor: #18233a;
+  --sapList_Hover_SelectionBackground: #1d2a42;
+  --sapButton_Background: #18212f;
+  --sapButton_BorderColor: rgba(148, 163, 184, 0.28);
+  --sapButton_Hover_Background: #1f2a3b;
+  --sapButton_Hover_BorderColor: rgba(165, 180, 252, 0.4);
+  --sapField_Background: #111a28;
+  --sapField_TextColor: var(--td-text);
+  --sapField_PlaceholderTextColor: var(--td-muted);
+  --sapField_BorderColor: rgba(148, 163, 184, 0.35);
+  --sapToolbar_SeparatorColor: var(--td-line);
+  --sapErrorBackground: rgba(244, 63, 94, 0.12);
+  --sapErrorBorderColor: rgba(251, 113, 133, 0.55);
+  --sapNegativeElementColor: #fb7185;
+  --sapNegativeTextColor: #fda4af;
+  --sapContent_ForegroundColor: #1a2434;
+  --sapScrollBar_FaceColor: #3b4a61;
+}
+/* standard UI5 surfaces and accents follow the theme (every theme except the default Aurora) */
+.td-view:is(.td-theme-indigo, .td-theme-ivory, .td-theme-teal, .td-theme-slate, .td-theme-midnight),
+.td-contact-dialog:is(.td-theme-indigo, .td-theme-ivory, .td-theme-teal, .td-theme-slate, .td-theme-midnight),
+.td-theme-popover:is(.td-theme-indigo, .td-theme-ivory, .td-theme-teal, .td-theme-slate, .td-theme-midnight),
+.td-number-sheet:is(.td-theme-indigo, .td-theme-ivory, .td-theme-teal, .td-theme-slate, .td-theme-midnight) {
+  --sapContent_FocusColor: var(--td-ui5-accent);
+  --sapLinkColor: var(--td-ui5-accent);
+  --sapLink_Hover_Color: var(--td-ui5-accent-strong);
+  --sapLink_Active_Color: var(--td-ui5-accent-strong);
+  --sapLink_Visited_Color: var(--td-ui5-accent);
+  --sapButton_TextColor: var(--td-ui5-accent);
+  --sapButton_Lite_TextColor: var(--td-ui5-accent);
+  --sapButton_Hover_TextColor: var(--td-ui5-accent-strong);
+  --sapSelectedColor: var(--td-ui5-accent);
+  --sapHighlightColor: var(--td-ui5-accent);
+  --sapList_SelectionBorderColor: var(--td-ui5-accent);
+  --sapContent_Selected_ForegroundColor: var(--td-ui5-accent);
+  --sapContent_BusyColor: var(--td-ui5-accent);
+  --sapList_Background: var(--td-surface);
+  --sapList_HeaderBackground: var(--td-surface);
+  --sapList_AlternatingBackground: var(--td-row-alt);
+  --sapGroup_ContentBackground: var(--td-surface);
+  --sapPageFooter_Background: var(--td-surface);
+}
+/* =========================== page frame =========================== */
+
+.td-view .td-page > section {
+  background: var(--td-bg);
+}
+/* header + search band have custom heights -> keep the scroll area aligned */
+.td-view .td-page.sapMPage > .sapMPageHeader + .sapMPageSubHeader + section {
+  top: calc(var(--td-header-h) + var(--td-search-h)) !important;
+}
+.td-view .td-page > .sapMPageHeader,
+.td-view .td-page > .sapMPageSubHeader {
+  background: var(--td-top-bg);
+  box-shadow: none;
+}
+/* separates scrolled content from the band */
+.td-view .td-page > .sapMPageSubHeader {
+  box-shadow: var(--td-band-shadow);
+}
+.td-view .td-page > .sapMPageHeader::after,
+.td-view .td-page > .sapMPageSubHeader::after {
+  display: none;
+}
+/* faint glow in the top-left corner */
+.td-view .td-page > .sapMPageHeader {
+  background: var(--td-header-glow), var(--td-top-bg);
+}
+.td-view .td-page > section::-webkit-scrollbar {
+  width: 0.75rem;
+}
+.td-view .td-page > section::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 1rem;
+  background: var(--td-scroll-thumb) padding-box;
+}
+/* =========================== header =========================== */
+
+.td-view .td-page .td-header.sapMTB {
+  height: var(--td-header-h) !important;
+  padding: 0 1.5rem;
+  background: transparent;
+  border-bottom: 1px solid var(--td-top-line);
+  box-shadow: none;
+}
+.td-view .td-brand {
+  min-width: 0;
+  overflow: hidden;
+}
+/* NLC India emblem (replaces the former call badge). The image is embedded here as a data URI,
+   so it needs no file or path on the server (160 px PNG = 4x the display size, sharp on HiDPI). */
+.td-view .td-brand .td-brand-logo {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--td-logo-size);
+  height: var(--td-logo-size);
+  margin-right: 0.75rem;
+  padding: var(--td-logo-pad);
+  border-radius: 50%;
+  background-color: var(--td-logo-bg);
+  background-image: url("data:image/png;base64,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");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-origin: content-box;
+  box-shadow: var(--td-logo-shadow);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.td-view .td-brand:hover .td-brand-logo {
+  transform: rotate(-8deg) scale(1.04);
+}
+.td-view .td-brand-text {
+  min-width: 0;
+}
+.td-view .td-brand-title.sapMTitle {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--td-top-text);
+  text-shadow: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.td-view .td-brand-subtitle.sapMText {
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--td-top-sub);
+}
+/* header buttons */
+.td-view .td-header .sapMBtn {
+  height: auto;
+}
+.td-view .td-header .sapMBtn + .sapMBtn {
+  margin-left: 0.5rem;
+}
+.td-view .td-header .sapMBtnInner {
+  border-radius: 999px !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.td-view .td-header .sapMBtnInner.sapMBtnTransparent {
+  background: var(--td-btn-bg) !important;
+  border: 1px solid var(--td-btn-border) !important;
+  box-shadow: var(--td-btn-shadow);
+}
+.td-view .td-header .sapMBtn:hover .sapMBtnInner.sapMBtnTransparent {
+  background: var(--td-btn-bg-hover) !important;
+  border-color: var(--td-btn-border-hover) !important;
+}
+.td-view .td-header .sapMBtnInner.sapMBtnTransparent .sapMBtnIcon,
+.td-view .td-header .sapMBtnInner.sapMBtnTransparent .sapMBtnContent {
+  color: var(--td-btn-text) !important;
+}
+/* palette button: the icon turns a little on hover */
+.td-view .td-header .td-theme-btn .sapMBtnIcon {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.td-view .td-header .td-theme-btn:hover .sapMBtnIcon {
+  transform: rotate(-24deg);
+}
+.td-view .td-header .sapMBtnInner.sapMBtnEmphasized {
+  background: var(--td-grad-btn) !important;
+  border: none !important;
+  box-shadow: var(--td-btn-primary-shadow);
+}
+.td-view .td-header .sapMBtn:hover .sapMBtnInner.sapMBtnEmphasized {
+  box-shadow: var(--td-btn-primary-shadow-hover);
+}
+.td-view .td-header .sapMBtnInner.sapMBtnEmphasized .sapMBtnIcon,
+.td-view .td-header .sapMBtnInner.sapMBtnEmphasized .sapMBtnContent {
+  color: var(--td-on-accent) !important;
+}
+.td-view .td-header .td-emergency-btn .sapMBtnInner {
+  background: var(--td-danger-grad) !important;
+  border: none !important;
+  box-shadow: var(--td-danger-shadow);
+  animation: td-sos 3.2s ease-in-out infinite;
+}
+.td-view .td-header .td-emergency-btn .sapMBtnIcon,
+.td-view .td-header .td-emergency-btn .sapMBtnContent {
+  color: #ffffff !important;
+}
+/* keep labels readable in hover / focus / active states and use a theme-coloured focus ring */
+.td-view .td-header .sapMBtn bdi,
+.td-view .td-chip bdi {
+  color: inherit !important;
+}
+.td-view .td-header .sapMBtnInner::before,
+.td-view .td-chip .sapMBtnInner::before {
+  border-color: var(--td-focus) !important;
+  border-radius: inherit !important;
+}
+/* =========================== search band =========================== */
+
+.td-view .td-page .td-search-band.sapMTB {
+  height: var(--td-search-h) !important;
+  padding: 0 1.5rem;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.td-view .td-search-band .td-search-field.sapMSF {
+  height: var(--td-field-h);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.td-view .td-search-field .sapMSFF {
+  position: relative;
+  height: 100%;
+  padding: 0 0.375rem 0 1.125rem;
+  border-radius: 999px;
+  border: 1px solid var(--td-field-border) !important;
+  background: var(--td-field-bg) !important;
+  box-shadow: var(--td-field-shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+.td-view .td-search-field .sapMSFF:hover {
+  border-color: var(--td-field-border-hover) !important;
+  background: var(--td-field-bg-hover) !important;
+}
+.td-view .td-search-field.sapMFocus .sapMSFF,
+.td-view .td-search-field .sapMSFF:focus-within {
+  outline: none !important;
+  border-color: var(--td-field-border-focus) !important;
+  background: var(--td-field-bg-focus) !important;
+  box-shadow: var(--td-field-shadow-focus);
+}
+.td-view .td-search-field.sapMFocus .sapMSFF::before,
+.td-view .td-search-field.sapMFocus .sapMSFF::after {
+  border: none !important;
+}
+.td-view .td-search-field .sapMSFI {
+  height: 100%;
+  font-size: 1.0625rem;
+  color: var(--td-field-text);
+  caret-color: var(--td-caret);
+  background: transparent;
+}
+.td-view .td-search-field .sapMSFI::placeholder {
+  color: var(--td-field-placeholder);
+  font-style: normal;
+}
+.td-view .td-search-field .sapMSFB,
+.td-view .td-search-field .sapMSFB::before,
+.td-view .td-search-field .sapMSFB::after,
+.td-view .td-search-field .sapMSFSSI {
+  color: var(--td-field-icon) !important;
+}
+.td-view .td-search-field .sapMSFB {
+  height: 100%;
+  line-height: var(--td-field-h);
+  border-radius: 50%;
+  background: transparent !important;
+}
+.td-view .td-search-field .sapMSFB:hover {
+  background: var(--td-field-btn-hover) !important;
+}
+/* "/" keyboard hint while the field is empty and not focused (mouse devices) */
+@media (hover: hover) and (pointer: fine) {
+  .td-view .td-search-field .sapMSFF:not(:focus-within):has(.sapMSFI:placeholder-shown)::after {
+    content: "/";
+    position: absolute;
+    top: 50%;
+    right: 3.25rem;
+    transform: translateY(-50%);
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--td-kbd-border);
+    background: var(--td-kbd-bg);
+    font: 600 0.75rem/1.2 var(--td-mono);
+    color: var(--td-kbd-text);
+    pointer-events: none;
+  }
+}
+/* =========================== hero =========================== */
+
+.td-view .td-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 1.25rem 1.5rem 5rem;
+  background: var(--td-hero-bg);
+}
+/* slowly drifting light on the left */
+.td-view .td-hero::before {
+  content: "";
+  position: absolute;
+  inset: -45% -15% -25% -15%;
+  z-index: -1;
+  background: var(--td-aurora);
+  filter: blur(12px);
+  -webkit-mask-image: var(--td-aurora-mask);
+  mask-image: var(--td-aurora-mask);
+  animation: td-aurora 24s ease-in-out infinite alternate;
+}
+/* fine pattern (grid, dots or pinstripes – depends on the theme) */
+.td-view .td-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--td-hero-pattern);
+  background-size: var(--td-hero-pattern-size);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 62%, transparent 100%);
+}
+.td-view .td-hero-inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+  gap: 1.125rem;
+}
+.td-view .td-hero-top {
+  gap: 0.75rem;
+}
+.td-view .td-live.sapMText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3125rem 0.875rem 0.3125rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--td-pill-text);
+  background: var(--td-pill-bg);
+  border: 1px solid var(--td-pill-border);
+  box-shadow: var(--td-pill-shadow);
+}
+.td-view .td-live.sapMText::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #34d399;
+  animation: td-pulse 2.2s ease-out infinite;
+}
+.td-view .td-live-off.sapMText::before {
+  background: #fbbf24;
+  animation: none;
+}
+.td-view .td-hero-hint.sapMText {
+  font-size: 0.75rem;
+  color: var(--td-top-sub);
+}
+/* key figures */
+.td-view .td-stats {
+  gap: 0.875rem;
+}
+.td-view .td-stats > .td-stat {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.td-view .td-stat {
+  box-sizing: border-box;
+  gap: 0.875rem;
+  padding: 0.875rem 1.125rem;
+  border-radius: 1rem;
+  border: 1px solid var(--td-glass-border);
+  background: var(--td-glass-bg);
+  box-shadow: var(--td-glass-shadow);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.td-view .td-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--td-stat-border-hover);
+  box-shadow: var(--td-glass-shadow-hover);
+}
+.td-view .td-stat-icon.sapUiIcon {
+  flex: none;
+  width: 2.625rem;
+  height: 2.625rem;
+  border-radius: 0.875rem;
+  font-size: 1.125rem;
+  color: var(--td-stat1-fg);
+  background: var(--td-stat1-bg);
+  box-shadow: var(--td-stat1-shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.td-view .td-stat:hover .td-stat-icon.sapUiIcon {
+  transform: scale(1.06) rotate(-4deg);
+}
+.td-view .td-stat-icon-2.sapUiIcon {
+  color: var(--td-stat2-fg);
+  background: var(--td-stat2-bg);
+  box-shadow: var(--td-stat2-shadow);
+}
+.td-view .td-stat-icon-3.sapUiIcon {
+  color: var(--td-stat3-fg);
+  background: var(--td-stat3-bg);
+  box-shadow: var(--td-stat3-shadow);
+}
+.td-view .td-stat-icon-4.sapUiIcon {
+  color: var(--td-stat4-fg);
+  background: var(--td-stat4-bg);
+  box-shadow: var(--td-stat4-shadow);
+}
+.td-view .td-stat-text {
+  min-width: 0;
+}
+.td-view .td-stat-value.sapMText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--td-top-text);
+}
+.td-view .td-stat-label.sapMText {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--td-top-label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* quick access chips */
+.td-view .td-quick {
+  gap: 0.875rem;
+}
+.td-view .td-quick-label.sapMText {
+  flex: none;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--td-top-sub);
+}
+.td-view .td-chips {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.td-view .td-chip.sapMBtn {
+  height: auto;
+  margin: 0;
+}
+.td-view .td-chip .sapMBtnInner {
+  height: 2.25rem;
+  border-radius: 999px !important;
+  border: 1px solid var(--td-chip-border) !important;
+  background: var(--td-chip-bg) !important;
+  box-shadow: var(--td-chip-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.td-view .td-chip .sapMBtnIcon {
+  color: var(--td-chip-icon) !important;
+}
+.td-view .td-chip .sapMBtnContent {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--td-chip-text) !important;
+}
+.td-view .td-chip:hover .sapMBtnInner {
+  transform: translateY(-1px);
+  border-color: var(--td-chip-border-hover) !important;
+  background: var(--td-chip-bg-hover) !important;
+  box-shadow: var(--td-chip-shadow-hover);
+}
+/* =========================== search mode =========================== */
+
+/* toggled with one class on the view (see _setSearchMode) */
+.td-view.td-searching .td-hero-inner,
+.td-view.td-searching .td-browse,
+.td-view:not(.td-searching) .td-results {
+  display: none !important;
+}
+/* inside the results card (see _setResultsStateClass) */
+.td-view .td-results:not(.td-state-results):not(.td-state-empty) .td-scope-tabs,
+.td-view .td-results:not(.td-state-results) .td-results-table,
+.td-view .td-results.td-state-results .td-empty {
+  display: none !important;
+}
+/* =========================== content =========================== */
+
+.td-view .td-content {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 96rem;
+  margin: -3.5rem auto 0;
+  padding: 0 1.5rem 2rem;
+  gap: 1.25rem;
+}
+.td-view .td-card {
+  position: relative;
+  background: var(--td-surface);
+  border: 1px solid var(--td-card-border);
+  border-radius: var(--td-radius);
+  box-shadow: var(--td-shadow);
+  /* no overflow:hidden – it would break the sticky table headers */
+}
+/* accent edge highlight where the card overlaps the hero */
+.td-view .td-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--td-card-edge);
+}
+.td-view .td-strip.sapMMsgStrip {
+  border-radius: 0.875rem;
+  box-shadow: var(--td-shadow);
+}
+.td-view .td-muted.sapMText {
+  font-size: 0.8125rem;
+  color: var(--td-muted);
+}
+/* =========================== tab bars =========================== */
+
+.td-view .td-tabs .sapMITBContainerContent {
+  display: none;
+  /* tabs are selectors only – hide the empty content area */
+}
+.td-view .td-main-tabs .sapMITH,
+.td-view .td-scope-tabs .sapMITH {
+  padding: 0 1.25rem;
+  background: transparent;
+  box-shadow: inset 0 -1px 0 var(--td-line);
+}
+.td-view .td-main-tabs .sapMITH {
+  border-radius: var(--td-radius) var(--td-radius) 0 0;
+}
+.td-view .td-main-tabs .sapMITBHead .sapMITHTextContent,
+.td-view .td-main-tabs .sapMITBHead .sapMITBText,
+.td-view .td-scope-tabs .sapMITBHead .sapMITHTextContent {
+  font-weight: 600;
+  color: var(--td-sub);
+  transition: color 0.2s ease;
+}
+.td-view .td-main-tabs .sapMITBHead .sapMITBFilter:hover .sapMITHTextContent,
+.td-view .td-scope-tabs .sapMITBHead .sapMITBFilter:hover .sapMITHTextContent {
+  color: var(--td-text);
+}
+.td-view .td-main-tabs .sapMITBHead .sapMITBSelected .sapMITHTextContent,
+.td-view .td-main-tabs .sapMITBHead .sapMITBSelected .sapMITBText,
+.td-view .td-scope-tabs .sapMITBHead .sapMITBSelected .sapMITHTextContent {
+  color: var(--td-text);
+}
+/* gradient selection indicator – grows in when a tab is selected */
+.td-view .td-main-tabs .sapMITBSelected .sapMITBContentArrow::after,
+.td-view .td-scope-tabs .sapMITBSelected .sapMITBContentArrow::after {
+  background: var(--td-tab-indicator) !important;
+  border-color: transparent !important;
+  border-radius: 3px 3px 0 0;
+  box-shadow: var(--td-tab-indicator-shadow);
+  animation: td-indicator 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* sub tabs as pills */
+.td-view .td-sub-tabs-container {
+  padding: 0.625rem 1rem 0.375rem;
+  border-bottom: 1px solid var(--td-line);
+  background: var(--td-subtabs-bg);
+}
+.td-view .td-sub-tabs .sapMITH {
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter {
+  padding: 0 0.25rem;
+  align-items: center;
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBText {
+  margin: 0 !important;
+  padding: 0;
+  line-height: 1;
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter .sapMITBFilterWrapper {
+  display: flex;
+  align-items: center;
+  height: 2.125rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--td-tab-pill-border);
+  background: var(--td-tab-pill-bg);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter:hover .sapMITBFilterWrapper {
+  border-color: var(--td-tab-pill-border-hover);
+  background: var(--td-tab-pill-bg-hover);
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter .sapMITHTextContent {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--td-sub);
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITBFilterWrapper {
+  border-color: transparent;
+  background: var(--td-tab-pill-sel-bg);
+  box-shadow: var(--td-tab-pill-sel-shadow);
+}
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITHTextContent {
+  color: var(--td-on-accent);
+}
+.td-view .td-sub-tabs .sapMITBContentArrow,
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilter::after,
+.td-view .td-sub-tabs .sapMITBHead .sapMITBFilterWrapper::after {
+  display: none;
+}
+/* =========================== tables =========================== */
+
+.td-view .td-table.sapMList,
+.td-view .td-table .sapMListTbl {
+  background: transparent;
+}
+.td-view .td-table-toolbar.sapMTB {
+  padding: 0 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--td-line);
+  background: var(--td-toolbar-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.td-view .td-table-toolbar .td-count-title.sapMTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--td-muted);
+}
+/* Executives | Non-Executives */
+.td-view .td-segment.sapMSegB {
+  padding: 0.1875rem;
+  border-radius: 999px;
+  border: 1px solid var(--td-seg-border);
+  background: var(--td-seg-bg);
+  height: auto;
+}
+.td-view .td-segment .sapMSegBBtn {
+  height: 2rem;
+  border: none !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+/* newer UI5 adds a framed wrapper around each item – keep the pill look */
+.td-view .td-segment .sapMSegBBtnInnerWrapper {
+  border: none !important;
+  background: transparent !important;
+}
+.td-view .td-segment .sapMSegBBtnInner {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  height: 2rem;
+  line-height: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--td-sub) !important;
+}
+.td-view .td-segment .sapMSegBBtn.sapMSegBBtnSel {
+  background: var(--td-seg-sel-bg) !important;
+  box-shadow: var(--td-seg-sel-shadow);
+}
+.td-view .td-segment .sapMSegBBtn.sapMSegBBtnSel .sapMSegBBtnInner {
+  color: var(--td-accent) !important;
+}
+.td-view .td-table .sapMListTblHeader,
+.td-view .td-table .sapMListTblHeader > th,
+.td-view .td-table .sapMListTblHeaderCell {
+  background: var(--td-thead-bg);
+}
+.td-view .td-table .sapMListTblHeaderCell .sapMText {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--td-faint);
+}
+.td-view .td-table .sapMListTblCell {
+  padding-top: 0.6875rem;
+  padding-bottom: 0.6875rem;
+  vertical-align: middle;
+}
+.td-view .td-table .sapMListTblCell:first-child,
+.td-view .td-table .sapMListTblHeaderCell:first-child {
+  padding-left: 1.5rem;
+}
+.td-view .td-table .sapMLIBShowSeparator {
+  border-bottom-color: var(--td-row-line);
+}
+.td-view .td-table tr.sapMLIB.sapMLIBHoverable:hover,
+.td-view .td-table tr.sapMLIB.sapMLIBHoverable:hover + .sapMListTblSubRow {
+  background: var(--td-row-hover) !important;
+}
+.td-view .td-table tr.sapMLIB.sapMLIBHoverable:hover > .sapMListTblHighlightCell {
+  box-shadow: inset 3px 0 0 var(--td-row-hover-edge);
+}
+/* division group header */
+.td-view .td-table .sapMGHLI {
+  background: var(--td-group-bg) !important;
+  border-top: 1px solid var(--td-line);
+}
+.td-view .td-table .sapMGHLI .sapMGHLITitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--td-group-text);
+}
+.td-view .td-table .sapMGHLI .sapMGHLITitle::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--td-group-dot);
+  box-shadow: var(--td-group-dot-shadow);
+}
+/* name / contact cell */
+.td-view .td-person {
+  gap: 0.875rem;
+  min-width: 0;
+}
+.td-view .td-person-text {
+  min-width: 0;
+  gap: 0.125rem;
+}
+.td-view .td-person-name,
+.td-view .td-person-name.sapMTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--td-text);
+}
+.td-view .td-person-name strong {
+  color: inherit;
+  font-weight: 800;
+  background: linear-gradient(180deg, transparent 58%, var(--td-mark) 58%);
+  border-radius: 0.125rem;
+}
+.td-view .td-person-role.sapMText {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--td-muted);
+}
+.td-view .td-location-link.sapMLnk {
+  margin-top: 0.1875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--td-link);
+}
+.td-view .td-service-name.sapMText {
+  font-weight: 700;
+  color: var(--td-text);
+}
+/* gradient avatars (stable colour per name via Accent1-10) */
+.td-view .td-avatar.sapFAvatar,
+.td-contact-dialog .td-contact-avatar.sapFAvatar {
+  flex: none;
+  border: none !important;
+  color: var(--td-avatar-text) !important;
+  box-shadow: var(--td-avatar-shadow);
+}
+.td-view .td-avatar .sapFAvatarInitialsHolder,
+.td-view .td-avatar .sapUiIcon,
+.td-contact-dialog .td-contact-avatar .sapFAvatarInitialsHolder,
+.td-contact-dialog .td-contact-avatar .sapUiIcon {
+  color: var(--td-avatar-text) !important;
+  font-weight: 700;
+}
+.td-view .sapFAvatarColorAccent1.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent1  {
+  background: var(--td-av1) !important;
+}
+.td-view .sapFAvatarColorAccent2.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent2  {
+  background: var(--td-av2) !important;
+}
+.td-view .sapFAvatarColorAccent3.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent3  {
+  background: var(--td-av3) !important;
+}
+.td-view .sapFAvatarColorAccent4.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent4  {
+  background: var(--td-av4) !important;
+}
+.td-view .sapFAvatarColorAccent5.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent5  {
+  background: var(--td-av5) !important;
+}
+.td-view .sapFAvatarColorAccent6.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent6  {
+  background: var(--td-av6) !important;
+}
+.td-view .sapFAvatarColorAccent7.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent7  {
+  background: var(--td-av7) !important;
+}
+.td-view .sapFAvatarColorAccent8.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent8  {
+  background: var(--td-av8) !important;
+}
+.td-view .sapFAvatarColorAccent9.td-avatar,  .td-contact-dialog .sapFAvatarColorAccent9  {
+  background: var(--td-av9) !important;
+}
+.td-view .sapFAvatarColorAccent10.td-avatar, .td-contact-dialog .sapFAvatarColorAccent10 {
+  background: var(--td-av10) !important;
+}
+/* phone numbers as pills */
+.td-view .td-num.sapMLnk {
+  display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: var(--td-num-bg);
+  white-space: pre-line;
+  overflow: visible;
+  text-overflow: clip;
+  text-decoration: none !important;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--td-num-text) !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.td-view .td-num.sapMLnk:hover {
+  border-color: var(--td-num-border-hover);
+  background: var(--td-num-bg-hover);
+  color: var(--td-num-text-hover) !important;
+  box-shadow: var(--td-num-shadow-hover);
+}
+/* UI5 >= 1.136 renders the text in an inner span (nowrap + ellipsis) – let it wrap like the link */
+.td-view .td-num.sapMLnk .sapMLnkText {
+  white-space: inherit;
+  overflow: visible;
+  text-overflow: clip;
+}
+.td-view .td-num.sapMLnk:empty,
+.td-view .td-num.sapMLnk:has(> .sapMLnkText:empty) {
+  display: none;
+}
+/* pop-in (narrow screens): two columns and no empty rows */
+.td-view .td-table .sapMListTblSubCntGridSmall {
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  grid-column-gap: 1rem;
+  padding-left: 3.375rem;
+}
+.td-view .td-table .sapMListTblSubCntRow:has(.td-num:empty),
+.td-view .td-table .sapMListTblSubCntRow:has(.td-num > .sapMLnkText:empty) {
+  display: none;
+}
+.td-view .td-table .sapMListTblSubCntHdr .sapMText {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--td-faint);
+}
+.td-view .td-table .sapMListTblSubCntSpr {
+  display: none;
+}
+.td-view .td-table .sapMListTblSubCntVal {
+  margin-top: 0.25rem;
+}
+/* =========================== search results card =========================== */
+
+.td-view .td-card-head {
+  padding: 1.125rem 1.5rem 0.5rem;
+  gap: 0.5rem;
+}
+.td-view .td-card-heading {
+  min-width: 0;
+  gap: 0.1875rem;
+}
+.td-view .td-card-title.sapMTitle {
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--td-text);
+}
+.td-view .td-back-btn .sapMBtnInner {
+  border-radius: 999px !important;
+}
+.td-view .td-empty {
+  padding: 3.25rem 1.5rem 3.75rem;
+  gap: 0.5rem;
+}
+.td-view .td-empty-icon.sapUiIcon {
+  width: 4.25rem;
+  height: 4.25rem;
+  margin-bottom: 0.625rem;
+  border-radius: 50%;
+  font-size: 1.75rem;
+  color: var(--td-on-accent);
+  background: var(--td-grad);
+  box-shadow: var(--td-empty-shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* =========================== misc =========================== */
+
+.td-view .td-footnote.sapMText {
+  display: block;
+  padding: 0.25rem 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--td-faint);
+}
+.td-view .td-fab.sapMBtn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 20;
+  height: auto;
+  animation: td-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.td-view .td-fab .sapMBtnInner {
+  width: 3rem;
+  height: 3rem;
+  min-width: 3rem;
+  border: none !important;
+  border-radius: 50% !important;
+  background: var(--td-grad-btn) !important;
+  box-shadow: var(--td-fab-shadow);
+  transition: transform 0.2s ease;
+}
+.td-view .td-fab:hover .sapMBtnInner {
+  transform: translateY(-2px);
+}
+.td-view .td-fab .sapMBtnIcon {
+  line-height: 3rem;
+  font-size: 1.125rem;
+  color: var(--td-on-accent) !important;
+}
+/* =========================== contact card dialog =========================== */
+
+.td-contact-dialog.sapMDialog {
+  overflow: hidden;
+  border: none;
+  border-radius: 1.5rem;
+  background: var(--td-surface);
+  box-shadow: var(--td-dlg-shadow);
+}
+.td-contact-dialog.sapMDialog.sapMDialogStretched {
+  border-radius: 0;
+}
+.td-contact-dialog .sapMDialogSection,
+.td-contact-dialog .td-contact-list.sapMList,
+.td-contact-dialog .td-contact-list .sapMLIB {
+  background: transparent;
+}
+.td-contact-dialog .sapMDialogScrollCont {
+  padding: 0;
+}
+.td-contact-dialog .td-contact-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 2rem 1.5rem 1.5rem;
+  gap: 0.25rem;
+  background: var(--td-dlg-hero-bg);
+  border-bottom: 1px solid var(--td-dlg-hero-border);
+}
+.td-contact-dialog .td-contact-hero::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: -1;
+  background: var(--td-dlg-aurora);
+  filter: blur(8px);
+}
+.td-contact-dialog .td-contact-avatar {
+  margin-bottom: 0.625rem;
+  box-shadow: 0 0 0 4px var(--td-dlg-ring), inset 0 0 0 1px rgba(255, 255, 255, 0.3), var(--td-dlg-avatar-glow) !important;
+  animation: td-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards;
+}
+.td-contact-dialog .td-contact-name.sapMTitle {
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--td-top-text);
+}
+.td-contact-dialog .td-contact-role.sapMText {
+  font-size: 0.875rem;
+  color: var(--td-sub);
+}
+.td-contact-dialog .td-contact-location {
+  margin-top: 0.625rem;
+  padding: 0.3125rem 0.875rem;
+  gap: 0.375rem;
+  border-radius: 999px;
+  border: 1px solid var(--td-pill-border);
+  background: var(--td-pill-bg);
+  box-shadow: var(--td-pill-shadow);
+}
+.td-contact-dialog .td-contact-location .sapUiIcon,
+.td-contact-dialog .td-contact-location .sapMText,
+.td-contact-dialog .td-contact-location .sapMLnk {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--td-dlg-location) !important;
+  text-shadow: none !important;
+}
+.td-contact-dialog .sapMDialogFooter .sapMTB {
+  padding: 0 0.75rem;
+  border-top: 1px solid var(--td-row-line);
+  background: var(--td-surface);
+}
+.td-contact-dialog .td-contact-division.sapMText {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--td-dlg-division);
+}
+.td-contact-dialog .td-contact-list .sapMLIB {
+  padding: 0;
+}
+.td-contact-dialog .td-contact-row {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  gap: 0.875rem;
+}
+.td-contact-dialog .td-contact-row-icon.sapUiIcon {
+  flex: none;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 0.875rem;
+  font-size: 1rem;
+  color: var(--td-link);
+  background: var(--td-dlg-row-icon-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.td-contact-dialog .td-contact-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.td-contact-dialog .td-contact-row-text .sapMLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--td-faint);
+}
+.td-contact-dialog .td-contact-row-value.sapMText {
+  font-size: 1.0625rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--td-text);
+}
+.td-contact-dialog .td-round-btn .sapMBtnInner {
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50% !important;
+}
+.td-contact-dialog .td-round-btn .sapMBtnIcon {
+  line-height: 2.5rem;
+}
+.td-contact-dialog .td-round-btn .sapMBtnInner.sapMBtnAccept {
+  border: none !important;
+  background: linear-gradient(135deg, #10b981, #06b6d4) !important;
+  box-shadow: 0 10px 22px -8px rgba(16, 185, 129, 0.85);
+}
+.td-contact-dialog .td-round-btn .sapMBtnInner.sapMBtnAccept .sapMBtnIcon {
+  color: #ffffff !important;
+}
+.td-contact-dialog .td-round-btn .sapMBtnInner.sapMBtnTransparent {
+  background: var(--td-soft-btn-bg) !important;
+}
+.td-contact-dialog .td-round-btn .sapMBtnInner.sapMBtnTransparent .sapMBtnIcon {
+  color: var(--td-sub) !important;
+}
+.td-contact-dialog .sapMDialogFooter .sapMBtnInner {
+  border-radius: 999px !important;
+}
+.td-contact-dialog .sapMDialogFooter .sapMBtnInner.sapMBtnEmphasized {
+  border: none !important;
+  background: var(--td-grad-btn) !important;
+  box-shadow: var(--td-dlg-btn-shadow);
+}
+.td-contact-dialog .sapMDialogFooter .sapMBtnInner.sapMBtnEmphasized .sapMBtnIcon,
+.td-contact-dialog .sapMDialogFooter .sapMBtnInner.sapMBtnEmphasized .sapMBtnContent {
+  color: var(--td-on-accent) !important;
+}
+/* =========================== theme picker =========================== */
+
+.td-theme-popover.sapMPopover {
+  border: none;
+  border-radius: 1.25rem;
+  background: var(--td-surface);
+  box-shadow: var(--td-pop-shadow);
+}
+.td-theme-popover .sapMPopoverCont,
+.td-theme-popover .sapMDialogSection {
+  background: transparent;
+}
+.td-theme-popover .sapMPopoverHeader .sapMIBar,
+.td-theme-popover .sapMDialogTitleGroup .sapMIBar,
+.td-theme-popover > header .sapMIBar {
+  background: transparent;
+  box-shadow: none;
+}
+.td-theme-popover .sapMIBar .sapMTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--td-text);
+}
+.td-theme-popover .td-theme-panel {
+  padding: 0 1rem 1rem;
+  gap: 0.875rem;
+}
+.td-theme-popover .td-theme-hint.sapMText {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--td-muted);
+}
+.td-theme-popover .td-theme-list.sapMList,
+.td-theme-popover .td-theme-list .sapMListItems {
+  background: transparent;
+}
+.td-theme-popover .td-theme-list .sapMListItems {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.td-theme-popover .td-theme-item.sapMLIB {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: none !important;
+  border-radius: 1rem;
+  background: transparent !important;
+  outline: none;
+}
+.td-theme-popover .td-theme-item.sapMLIB::before,
+.td-theme-popover .td-theme-item.sapMLIB::after {
+  border-radius: 1rem !important;
+}
+.td-theme-popover .td-theme-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.375rem 0.375rem 0.625rem;
+  border-radius: 1rem;
+  border: 1px solid var(--td-line);
+  background: var(--td-surface);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.td-theme-popover .td-theme-item:hover .td-theme-option {
+  transform: translateY(-2px);
+  border-color: var(--td-ring);
+  box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.55);
+}
+.td-theme-popover .td-theme-item.sapMLIBSelected .td-theme-option {
+  border-color: var(--td-ring);
+  box-shadow: 0 0 0 1px var(--td-ring), 0 12px 24px -16px rgba(15, 23, 42, 0.55);
+}
+/* check mark on the active theme */
+.td-theme-popover .td-theme-item.sapMLIBSelected .td-theme-option::after {
+  content: "";
+  position: absolute;
+  top: 5.25rem;
+  /* on the name line, below the 4.5rem preview */
+    right: 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.4l2.6 2.6L12 5.6' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 0.8rem no-repeat, var(--td-grad-btn);
+  box-shadow: 0 0 0 2px var(--td-surface), 0 4px 10px -4px rgba(15, 23, 42, 0.5);
+  animation: td-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.td-theme-popover .td-theme-name.sapMText {
+  margin: 0.5rem 1.75rem 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--td-text);
+}
+.td-theme-popover .td-theme-desc.sapMText {
+  margin: 0.0625rem 0.25rem 0;
+  font-size: 0.6875rem;
+  color: var(--td-muted);
+}
+/* mini preview of each theme (colours are fixed per swatch, independent of the active theme) */
+.td-theme-popover .td-swatch {
+  position: relative;
+  overflow: hidden;
+  height: 4.5rem;
+  border-radius: 0.75rem;
+  background:
+        radial-gradient(circle at 0.75rem 0.625rem, var(--sw-logo) 0 0.25rem, transparent 0.28rem),
+        linear-gradient(var(--sw-ink), var(--sw-ink)) 1.3rem 0.52rem / 2.25rem 0.2rem no-repeat,
+        var(--sw-top) 0 0 / 100% 1.25rem no-repeat,
+        radial-gradient(55% 60% at 12% 55%, var(--sw-glow), transparent 70%),
+        var(--sw-bg);
+  box-shadow: inset 0 0 0 1px var(--sw-edge);
+}
+.td-theme-popover .td-swatch::before {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  width: 1.6rem;
+  height: 0.45rem;
+  border-radius: 1rem;
+  background: var(--sw-accent);
+}
+.td-theme-popover .td-swatch::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  top: 1.75rem;
+  bottom: -0.5rem;
+  border-radius: 0.5rem;
+  background:
+        var(--sw-accent) 0.5rem 0.45rem / 1.6rem 0.16rem no-repeat,
+        linear-gradient(var(--sw-pill), var(--sw-pill)) 0.5rem 1rem / 1.55rem 0.55rem no-repeat,
+        linear-gradient(var(--sw-pill), var(--sw-pill)) 2.3rem 1rem / 1.55rem 0.55rem no-repeat,
+        linear-gradient(var(--sw-line), var(--sw-line)) 0.5rem 1.95rem / 60% 0.2rem no-repeat,
+        var(--sw-card);
+  box-shadow: 0 0 0 1px var(--sw-edge), 0 8px 16px -10px rgba(15, 23, 42, 0.45);
+}
+.td-theme-popover .td-swatch-aurora {
+  --sw-bg: #f2f4fa;
+  --sw-top: linear-gradient(100deg, #d2effa, #eef3fb);
+  --sw-glow: rgba(34, 211, 238, 0.35);
+  --sw-accent: linear-gradient(135deg, #3b82f6, #6366f1 50%, #8b5cf6);
+  --sw-card: #ffffff;
+  --sw-pill: #e7eaff;
+  --sw-line: #e6e9f1;
+  --sw-ink: #0f172a;
+  --sw-logo: #3d2f84;
+  --sw-edge: rgba(15, 23, 42, 0.08);
+}
+.td-theme-popover .td-swatch-indigo {
+  --sw-bg: #f5f5fa;
+  --sw-top: linear-gradient(100deg, #e7e3fb, #f5f4fb);
+  --sw-glow: rgba(124, 111, 224, 0.3);
+  --sw-accent: linear-gradient(135deg, #34287a, #5c4cc4);
+  --sw-card: #ffffff;
+  --sw-pill: #ece9fa;
+  --sw-line: #eceaf4;
+  --sw-ink: #1a1736;
+  --sw-logo: #3d2f84;
+  --sw-edge: rgba(61, 47, 132, 0.1);
+}
+.td-theme-popover .td-swatch-ivory {
+  --sw-bg: #f7f5ef;
+  --sw-top: linear-gradient(100deg, #f2e6cc, #faf7f0);
+  --sw-glow: rgba(212, 178, 122, 0.35);
+  --sw-accent: linear-gradient(135deg, #1b355a, #2d5690);
+  --sw-card: #fffdf9;
+  --sw-pill: #f3ead7;
+  --sw-line: #efe8da;
+  --sw-ink: #1d2330;
+  --sw-logo: #3d2f84;
+  --sw-edge: rgba(120, 96, 52, 0.14);
+}
+.td-theme-popover .td-swatch-teal {
+  --sw-bg: #f1f7f6;
+  --sw-top: linear-gradient(100deg, #cdf1e8, #eef7f5);
+  --sw-glow: rgba(45, 212, 191, 0.35);
+  --sw-accent: linear-gradient(135deg, #14b8a6, #0f766e);
+  --sw-card: #ffffff;
+  --sw-pill: #dff4ef;
+  --sw-line: #e5efed;
+  --sw-ink: #0c2a2a;
+  --sw-logo: #3d2f84;
+  --sw-edge: rgba(15, 118, 110, 0.1);
+}
+.td-theme-popover .td-swatch-slate {
+  --sw-bg: #f3f5f8;
+  --sw-top: linear-gradient(100deg, #e3eaf6, #f3f5f8);
+  --sw-glow: rgba(59, 130, 246, 0.18);
+  --sw-accent: linear-gradient(135deg, #1d4ed8, #1d4ed8);
+  --sw-card: #ffffff;
+  --sw-pill: #e6eeff;
+  --sw-line: #e8ebf0;
+  --sw-ink: #0f172a;
+  --sw-logo: #3d2f84;
+  --sw-edge: rgba(15, 23, 42, 0.1);
+}
+.td-theme-popover .td-swatch-midnight {
+  --sw-bg: #0b1019;
+  --sw-top: linear-gradient(100deg, #12233a, #0c121e);
+  --sw-glow: rgba(34, 211, 238, 0.25);
+  --sw-accent: linear-gradient(135deg, #3b82f6, #6366f1 50%, #8b5cf6);
+  --sw-card: #121a27;
+  --sw-pill: rgba(129, 140, 248, 0.28);
+  --sw-line: rgba(148, 163, 184, 0.2);
+  --sw-ink: #e8ecf4;
+  --sw-logo: #ffffff;
+  --sw-edge: rgba(148, 163, 184, 0.18);
+}
+/* =========================== Midnight: explicit surfaces ===========================
+   Midnight paints the standard UI5 parts of this view itself, so it works everywhere – also
+   where the SAP theme uses fixed colours (UI5 below 1.118, custom themes) or where another
+   stylesheet forces white table rows / toolbars. Selectors are deliberately strong (!important). */
+
+/* tables: container, header toolbar, column header */
+.td-view.td-theme-midnight .td-table.sapMList,
+.td-view.td-theme-midnight .td-table .sapMListTbl,
+.td-view.td-theme-midnight .td-table .sapMListUl {
+  background: transparent !important;
+}
+/* UI5 masks the rounded corners of a sticky table toolbar with a ::before layer */
+.td-view.td-theme-midnight .td-table.sapMList::before {
+  background: var(--td-surface) !important;
+}
+.td-view.td-theme-midnight .td-table.sapMList > .sapMListHdr,
+.td-view.td-theme-midnight .td-table.sapMList > .td-table-toolbar.sapMTB,
+.td-view.td-theme-midnight .td-table .sapMListHdrTBar.sapMTB {
+  background: var(--td-toolbar-bg) !important;
+  border-bottom: 1px solid var(--td-line) !important;
+  box-shadow: none !important;
+}
+.td-view.td-theme-midnight .td-table .sapMListTbl > thead > tr,
+.td-view.td-theme-midnight .td-table .sapMListTbl > thead > tr > th {
+  background: var(--td-thead-bg) !important;
+  border-color: var(--td-line) !important;
+}
+/* rows */
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB,
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMListTblSubRow {
+  background: var(--td-surface) !important;
+  border-color: var(--td-row-line) !important;
+  color: var(--td-text);
+}
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr > td {
+  background: transparent !important;
+  border-color: var(--td-row-line) !important;
+}
+/* service numbers: alternating rows */
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMListTblRowAlternate:nth-child(even) {
+  background: var(--td-row-alt) !important;
+}
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMLIBActive,
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMLIBActive + tr.sapMListTblSubRow {
+  background: #1d2a42 !important;
+}
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMLIBHoverable:hover,
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMLIBHoverable:hover + tr.sapMListTblSubRow {
+  background: var(--td-row-hover), var(--td-surface) !important;
+}
+/* division group headers */
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMGHLI,
+.td-view.td-theme-midnight .td-table .sapMListTbl > tbody > tr.sapMLIB.sapMGHLI > td {
+  background: var(--td-group-bg) !important;
+  border-color: var(--td-line) !important;
+}
+/* empty table, "More" (growing) trigger */
+.td-view.td-theme-midnight .td-table .sapMListTblCellNoData,
+.td-view.td-theme-midnight .td-table .sapMListNoData {
+  color: var(--td-muted) !important;
+}
+.td-view.td-theme-midnight .td-table .sapMGrowingListTrigger,
+.td-view.td-theme-midnight .td-table .sapMGrowingListTrigger .sapMLIB,
+.td-view.td-theme-midnight .td-table .sapMGrowingListTrigger .sapMSLIDiv {
+  background: var(--td-surface) !important;
+  border-color: var(--td-line) !important;
+}
+.td-view.td-theme-midnight .td-table .sapMGrowingListTriggerText .sapMSLITitle,
+.td-view.td-theme-midnight .td-table .sapMGrowingListTriggerText .sapMSLITitleOnly {
+  color: var(--td-link) !important;
+}
+.td-view.td-theme-midnight .td-table .sapMGrowingListDescription {
+  color: var(--td-muted) !important;
+}
+/* tab bars: "More" overflow button, counters */
+.td-view.td-theme-midnight .td-tabs .sapMITH .sapMITHEndOverflow .sapMITBItem,
+.td-view.td-theme-midnight .td-tabs .sapMITH .sapMITHStartOverflow .sapMITBItem,
+.td-view.td-theme-midnight .td-tabs .sapMITHOverflowButton .sapMBtnInner {
+  background: var(--td-btn-bg) !important;
+  border-color: var(--td-btn-border) !important;
+}
+.td-view.td-theme-midnight .td-tabs .sapMITH .sapMITHEndOverflow .sapMITBItem:hover,
+.td-view.td-theme-midnight .td-tabs .sapMITH .sapMITHStartOverflow .sapMITBItem:hover,
+.td-view.td-theme-midnight .td-tabs .sapMITHOverflowButton:hover .sapMBtnInner {
+  background: var(--td-btn-bg-hover) !important;
+  border-color: var(--td-btn-border-hover) !important;
+}
+.td-view.td-theme-midnight .td-tabs .sapMITHEndOverflow .sapMITBItem *,
+.td-view.td-theme-midnight .td-tabs .sapMITHStartOverflow .sapMITBItem *,
+.td-view.td-theme-midnight .td-tabs .sapMITHOverflowButton .sapMBtnInner * {
+  color: var(--td-btn-text) !important;
+}
+.td-view.td-theme-midnight .td-tabs .sapMITBCount {
+  color: var(--td-muted) !important;
+}
+.td-view.td-theme-midnight .td-tabs .sapMITH {
+  border-bottom-color: var(--td-line) !important;
+}
+.td-view.td-theme-midnight .td-sub-tabs .sapMITH {
+  border-bottom-color: transparent !important;
+}
+/* results card: back button, empty state */
+.td-view.td-theme-midnight .td-back-btn .sapMBtnInner {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.td-view.td-theme-midnight .td-back-btn:hover .sapMBtnInner {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.td-view.td-theme-midnight .td-back-btn .sapMBtnIcon,
+.td-view.td-theme-midnight .td-back-btn .sapMBtnContent {
+  color: var(--td-link) !important;
+}
+.td-view.td-theme-midnight .td-empty .sapMTitle {
+  color: var(--td-text) !important;
+}
+/* load-error strip, busy overlay */
+.td-view.td-theme-midnight .td-strip.sapMMsgStrip {
+  background: rgba(244, 63, 94, 0.12) !important;
+  border-color: rgba(251, 113, 133, 0.5) !important;
+  color: var(--td-text) !important;
+}
+.td-view.td-theme-midnight .td-strip .sapMMsgStripMessage,
+.td-view.td-theme-midnight .td-strip .sapMText {
+  color: var(--td-text) !important;
+}
+.td-view.td-theme-midnight .td-strip .sapMMsgStripIcon {
+  color: #fb7185 !important;
+}
+.td-view.td-theme-midnight .td-strip .sapMLnk {
+  color: var(--td-link) !important;
+}
+.td-view.td-theme-midnight .sapUiLocalBusyIndicator {
+  background-color: rgba(11, 16, 25, 0.55) !important;
+}
+/* contact card */
+.td-contact-dialog.td-theme-midnight.sapMDialog,
+.td-contact-dialog.td-theme-midnight .sapMDialogSection,
+.td-contact-dialog.td-theme-midnight .sapMDialogScrollCont {
+  background-color: var(--td-surface) !important;
+}
+.td-contact-dialog.td-theme-midnight .td-contact-list.sapMList,
+.td-contact-dialog.td-theme-midnight .td-contact-list .sapMListUl,
+.td-contact-dialog.td-theme-midnight .td-contact-list .sapMLIB {
+  background: transparent !important;
+  border-color: var(--td-row-line) !important;
+}
+.td-contact-dialog.td-theme-midnight .td-contact-list .sapMListNoData,
+.td-contact-dialog.td-theme-midnight .td-contact-row-text .sapMLabel {
+  color: var(--td-faint) !important;
+}
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter,
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMIBar,
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMTB {
+  background: var(--td-surface) !important;
+  box-shadow: none !important;
+}
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMTB {
+  border-top: 1px solid var(--td-row-line) !important;
+}
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMBtnInner.sapMBtnDefault {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMBtn:hover > .sapMBtnInner.sapMBtnDefault {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMBtnInner.sapMBtnDefault .sapMBtnIcon,
+.td-contact-dialog.td-theme-midnight .sapMDialogFooter .sapMBtnInner.sapMBtnDefault .sapMBtnContent {
+  color: var(--td-text) !important;
+}
+.td-contact-dialog.td-theme-midnight .td-round-btn:hover .sapMBtnInner.sapMBtnTransparent {
+  background: #222d41 !important;
+}
+/* theme picker (popover on desktop, dialog on phones) */
+.td-theme-popover.td-theme-midnight.sapMPopover,
+.td-theme-popover.td-theme-midnight.sapMDialog {
+  background: var(--td-surface) !important;
+}
+.td-theme-popover.td-theme-midnight .sapMPopoverCont,
+.td-theme-popover.td-theme-midnight .sapMDialogSection,
+.td-theme-popover.td-theme-midnight .sapMPopoverHeader,
+.td-theme-popover.td-theme-midnight .sapMIBar,
+.td-theme-popover.td-theme-midnight > header {
+  background: transparent !important;
+}
+.td-theme-popover.td-theme-midnight .sapMIBar {
+  box-shadow: inset 0 -1px 0 var(--td-line) !important;
+}
+/* older UI5 draws the header divider as a light shadow on header::after */
+.td-theme-popover.td-theme-midnight header::after,
+.td-theme-popover.td-theme-midnight .sapMIBar::after {
+  box-shadow: none !important;
+}
+.td-theme-popover.td-theme-midnight .sapMPopoverArr::after {
+  background: var(--td-surface) !important;
+}
+.td-theme-popover.td-theme-midnight .sapMIBar .sapMTitle {
+  color: var(--td-text) !important;
+}
+/* close button (phones) */
+.td-theme-popover.td-theme-midnight .sapMIBar .sapMBtnInner,
+.td-theme-popover.td-theme-midnight .sapMBtnInner.sapMBtnTransparent {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.td-theme-popover.td-theme-midnight .sapMIBar .sapMBtn:hover > .sapMBtnInner {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.td-theme-popover.td-theme-midnight .sapMIBar .sapMBtnInner .sapMBtnIcon,
+.td-theme-popover.td-theme-midnight .sapMBtnInner.sapMBtnTransparent .sapMBtnIcon {
+  color: var(--td-link) !important;
+}
+/* number menu and the phone "…" menu: UI5 renders their frame outside the view, so they are
+   found via the content they hold (the colours below are Midnight's tokens written out) */
+.sapMPopover:has(.td-number-sheet.td-theme-midnight),
+.sapMDialog:has(.td-number-sheet.td-theme-midnight),
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) {
+  color-scheme: dark;
+  background: #121a27 !important;
+}
+.sapMPopover:has(.td-number-sheet.td-theme-midnight) .sapMPopoverArr::after,
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) .sapMPopoverArr::after {
+  background: #121a27 !important;
+}
+.sapMPopover:has(.td-number-sheet.td-theme-midnight) :is(.sapMPopoverCont, .sapMPopoverHeader, .sapMIBar, .sapMActionSheet),
+.sapMDialog:has(.td-number-sheet.td-theme-midnight) :is(.sapMDialogSection, .sapMIBar, .sapMDialogFooter, .sapMActionSheet),
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) :is(.sapMPopoverCont, .sapMOTAPopoverCont) {
+  background: transparent !important;
+}
+:is(.sapMPopover, .sapMDialog):has(.td-number-sheet.td-theme-midnight) .sapMTitle {
+  color: #e8ecf4 !important;
+}
+:is(.sapMPopover, .sapMDialog):has(.td-number-sheet.td-theme-midnight) header::after,
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) header::after {
+  box-shadow: none !important;
+}
+:is(.sapMPopover, .sapMDialog):has(.td-number-sheet.td-theme-midnight) .sapMBtnInner,
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) .sapMBtnInner {
+  background: transparent !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+:is(.sapMPopover, .sapMDialog):has(.td-number-sheet.td-theme-midnight) .sapMBtn:hover > .sapMBtnInner,
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) .sapMBtn:hover > .sapMBtnInner {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+:is(.sapMPopover, .sapMDialog):has(.td-number-sheet.td-theme-midnight) :is(.sapMBtnContent, .sapMBtnIcon),
+.sapMPopover:has(.td-theme-btn.td-theme-midnight) :is(.sapMBtnContent, .sapMBtnIcon) {
+  color: #c7d2fe !important;
+}
+/* =========================== motion =========================== */
+
+/* entrance: hero items and cards rise in (also when leaving / entering search) */
+.td-view .td-hero-top,
+.td-view .td-stats > .td-stat,
+.td-view .td-quick,
+.td-view .td-card {
+  animation: td-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.td-view .td-stats > .td-stat:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.td-view .td-stats > .td-stat:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.td-view .td-stats > .td-stat:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.td-view .td-quick {
+  animation-delay: 0.2s;
+}
+.td-view .td-card {
+  animation-delay: 0.08s;
+}
+/* theme switch: circular reveal (started by the controller via the View Transitions API) */
+html.td-theme-switching::view-transition-old(root),
+html.td-theme-switching::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+@keyframes td-aurora {
+  0% {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(3%, 3%, 0) scale(1.08);
+  }
+}
+@keyframes td-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+@keyframes td-sos {
+  0%, 100% {
+    box-shadow: var(--td-danger-shadow);
+  }
+  50% {
+    box-shadow: var(--td-danger-shadow-pulse);
+  }
+}
+@keyframes td-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes td-indicator {
+  from {
+    transform: scaleX(0.3);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes td-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .td-view *,
+    .td-view *::before,
+    .td-view *::after,
+    .td-contact-dialog *,
+    .td-theme-popover *,
+    .td-theme-popover *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* =========================== responsive =========================== */
+
+@media (max-width: 1279px) {
+  .td-view .td-stats {
+    flex-wrap: wrap;
+  }
+  .td-view .td-stats > .td-stat {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
+}
+@media (max-width: 1023px) {
+  .td-view .td-hero {
+    padding: 1rem 1rem 4.5rem;
+  }
+  .td-view .td-content {
+    padding: 0 1rem 2rem;
+  }
+  .td-view .td-hero-hint.sapMText,
+    .td-view .td-quick-label.sapMText {
+    display: none;
+  }
+}
+@media (max-width: 599px) {
+  .td-view {
+    --td-header-h: 3.25rem;
+    --td-search-h: 4rem;
+    --td-field-h: 2.75rem;
+    --td-logo-size: 2.25rem;
+  }
+  .td-view .td-page .td-header.sapMTB,
+    .td-view .td-page .td-search-band.sapMTB {
+    padding: 0 0.75rem;
+  }
+  .td-view .td-brand .td-brand-logo {
+    margin-right: 0.5rem;
+  }
+  .td-view .td-brand-title.sapMTitle {
+    font-size: 1rem;
+  }
+  .td-view .td-brand-subtitle.sapMText {
+    display: none;
+  }
+  .td-view .td-header .sapMBtn + .sapMBtn {
+    margin-left: 0.375rem;
+  }
+  .td-view .td-search-field .sapMSFI {
+    font-size: 1rem;
+  }
+  .td-view .td-hero {
+    padding: 0.875rem 0.75rem 3.75rem;
+  }
+  .td-view .td-hero-inner {
+    gap: 0.875rem;
+  }
+  /* horizontally scrolling stats and chips */
+    .td-view .td-stats,
+    .td-view .td-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding: 0 0.75rem;
+    scrollbar-width: none;
+    margin: 0 -0.75rem;
+    padding: 0.125rem 0.75rem 0.375rem;
+  }
+  .td-view .td-stats::-webkit-scrollbar,
+    .td-view .td-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .td-view .td-stats > .td-stat {
+    flex: 0 0 auto;
+    min-width: 9.75rem;
+    padding: 0.625rem 0.875rem;
+    gap: 0.625rem;
+    scroll-snap-align: start;
+  }
+  .td-view .td-stat-icon.sapUiIcon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+  .td-view .td-stat-value.sapMText {
+    font-size: 1.25rem;
+  }
+  .td-view .td-quick-label.sapMText {
+    display: none;
+  }
+  .td-view .td-quick {
+    margin-top: -0.25rem;
+  }
+  .td-view .td-chips > .td-chip {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  .td-view .td-content {
+    margin-top: -2.75rem;
+    padding: 0 0.5rem 4.5rem;
+    gap: 0.875rem;
+  }
+  .td-view .td-card {
+    border-radius: 1rem;
+  }
+  .td-view .td-main-tabs .sapMITH,
+    .td-view .td-scope-tabs .sapMITH {
+    padding: 0 0.375rem;
+  }
+  .td-view .td-main-tabs .sapMITH {
+    border-radius: 1rem 1rem 0 0;
+  }
+  .td-view .td-sub-tabs-container {
+    padding: 0.5rem 0.375rem 0.25rem;
+  }
+  .td-view .td-table-toolbar.sapMTB {
+    padding: 0 0.5rem 0 0.875rem;
+  }
+  .td-view .td-table .sapMListTblCell:first-child,
+    .td-view .td-table .sapMListTblHeaderCell:first-child {
+    padding-left: 0.875rem;
+  }
+  .td-view .td-table .sapMListTblSubCntGridSmall {
+    padding-left: 3rem;
+  }
+  .td-view .td-card-head {
+    padding: 0.875rem 0.875rem 0.25rem;
+  }
+  .td-view .td-fab.sapMBtn {
+    right: 1rem;
+    bottom: 1rem;
+  }
+  .td-theme-popover .td-theme-panel {
+    padding: 0.75rem 1rem 1.25rem;
+  }
+}
